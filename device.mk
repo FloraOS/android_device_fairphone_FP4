@@ -779,6 +779,9 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.telephony.gsm.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.telephony.gsm.xml \
     frameworks/native/data/etc/android.hardware.telephony.ims.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.telephony.ims.xml
 
+# Enable Dual SIM by default
+PRODUCT_PROPERTY_OVERRIDES += persist.radio.multisim.config=dsds
+
 # Vendor property to enable advanced network scanning
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.vendor.radio.enableadvancedscan=true
