@@ -236,6 +236,10 @@ PRODUCT_PACKAGES += \
     bootctrl.lito \
     libminui
 
+# Shorten wait time for shutdown
+PRODUCT_PROPERTY_OVERRIDES += \
+    sys.vendor.shutdown.waittime=500
+
 
 # Skip boot jars check
 SKIP_BOOT_JARS_CHECK := true
