@@ -762,6 +762,10 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.telephony.gsm.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.telephony.gsm.xml \
     frameworks/native/data/etc/android.hardware.telephony.ims.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.telephony.ims.xml
 
+# Vendor property to enable advanced network scanning
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.vendor.radio.enableadvancedscan=true
+
 # Other radio/RIL properties
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.telephony.iwlan_operation_mode=AP-assisted \
