@@ -697,6 +697,10 @@ PRODUCT_COPY_FILES += \
     vendor/qcom/opensource/power/config/lito/powerhint.xml:$(TARGET_COPY_OUT_VENDOR)/etc/powerhint.xml
 
 
+# privapp-permissions whitelisting (To Fix CTS :privappPermissionsMustBeEnforced)
+PRODUCT_PROPERTY_OVERRIDES += ro.control_privapp_permissions=enforce
+
+
 # Protobuf
 PRODUCT_PACKAGES += \
     libprotobuf-cpp-full \
