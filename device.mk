@@ -717,6 +717,11 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.vendor.qcomsysd.enabled=1
 
 
+# target specific runtime prop for qspm
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.vendor.qspm.enable=true
+
+
 # Radio
 PRODUCT_PACKAGES += \
     android.hardware.radio.config@1.0 \
