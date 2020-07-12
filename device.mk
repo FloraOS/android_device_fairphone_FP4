@@ -465,6 +465,10 @@ PRODUCT_PACKAGES += \
     libhwbinder.vendor
 
 
+# Enable incremental FS feature
+PRODUCT_PROPERTY_OVERRIDES += ro.incremental.enable=1
+
+
 # Init
 PRODUCT_PACKAGES += \
     init.crda.sh \
