@@ -56,8 +56,8 @@ $(INSTALLED_KERNEL_TARGET): $(TARGET_PREBUILT_KERNEL) | $(ACP)
 #----------------------------------------------------------------------
 # override default make with prebuilt make path (if any)
 #----------------------------------------------------------------------
-ifneq (, $(wildcard $(shell pwd)/prebuilts/build-tools/linux-x86/bin/make))
-    MAKE := $(shell pwd)/prebuilts/build-tools/linux-x86/bin/$(MAKE)
+ifneq (, $(wildcard $(abspath .)/prebuilts/build-tools/linux-x86/bin/make))
+    MAKE := $(abspath .)/prebuilts/build-tools/linux-x86/bin/$(MAKE)
 endif
 
 #----------------------------------------------------------------------
