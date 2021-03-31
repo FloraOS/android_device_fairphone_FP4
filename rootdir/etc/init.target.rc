@@ -75,6 +75,11 @@ on fs
     chmod 0771 /mnt/vendor/oempersist
     restorecon_recursive /mnt/vendor/oempersist
 
+    mkdir /mnt/vendor/persist/factory 0771 root system
+    mkdir /mnt/vendor/persist/factory/audio 0771 root system
+    chown root system /mnt/vendor/persist/factory/audio/aw_cali.bin
+    chmod 0664 /mnt/vendor/persist/factory/audio/aw_cali.bin
+
 on post-fs
     # set RLIMIT_MEMLOCK to 64MB
     setrlimit 8 67108864 67108864

@@ -65,3 +65,5 @@
 /vendor/lib(64)?/vendor.qti.hardware.camera.postproc@1.0\.so                                u:object_r:same_process_hal_file:s0
 /vendor/lib(64)?/libqcomisphidl\.so                                                         u:object_r:same_process_hal_file:s0
 /vendor/lib(64)?/libmorpho_dcface\.so                                                       u:object_r:same_process_hal_file:s0
+
+/mnt/vendor/persist/factory/audio(/.*)?                                                     u:object_r:oem_persist_aw_cali_file:s0
