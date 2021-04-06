@@ -8,3 +8,6 @@
 
 /dev/aw882xx_smartpa_l                                                                      u:object_r:vendor_audio_device:s0
 /dev/aw882xx_smartpa_r                                                                      u:object_r:vendor_audio_device:s0
+
+/dev/fpsensor                                                                               u:object_r:fpsensor_fp_device:s0
+/data/fpsensor(/.*)?                                                                        u:object_r:fpsensor_data_file:s0

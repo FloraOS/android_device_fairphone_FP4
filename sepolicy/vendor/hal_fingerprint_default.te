@@ -1,0 +1,7 @@
+#allow hal_fingerprint_default to access /dev/fpsensor
+allow hal_fingerprint_default fpsensor_fp_device:chr_file { open read write ioctl};
+allow hal_fingerprint_default fuse:dir {search};
+allow hal_fingerprint_default mnt_user_file:dir {search};
+allow hal_fingerprint_default mnt_user_file:lnk_file {read};
+allow hal_fingerprint_default storage_file:lnk_file {read};
+allow hal_fingerprint_default tee_device:chr_file { read write ioctl open };

@@ -1,1 +1,3 @@
 type vendor_audio_device, dev_type;
+
+type fpsensor_fp_device, dev_type;
