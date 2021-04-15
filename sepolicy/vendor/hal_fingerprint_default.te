@@ -5,3 +5,11 @@ allow hal_fingerprint_default mnt_user_file:dir {search};
 allow hal_fingerprint_default mnt_user_file:lnk_file {read};
 allow hal_fingerprint_default storage_file:lnk_file {read};
 allow hal_fingerprint_default tee_device:chr_file { read write ioctl open };
+
+#MMITest
+type fp_ext_svc2_service, hwservice_manager_type;
+allow hal_fingerprint_default  fp_ext_svc2_service:hwservice_manager {add};
+allow platform_app     fp_ext_svc2_service:hwservice_manager {find};
+allow system_app     fp_ext_svc2_service:hwservice_manager {find};
+
+set_prop(hal_fingerprint_default, vendor_t2m_sys_prop)
