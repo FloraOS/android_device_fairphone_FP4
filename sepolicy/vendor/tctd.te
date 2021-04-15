@@ -2,3 +2,57 @@ type tctd, domain;
 type tctd_exec, exec_type, file_type, vendor_file_type;
 
 init_daemon_domain(tctd)
+
+# self socket
+allow tctd self:socket { write read create ioctl };
+allowxperm tctd self:socket ioctl msm_sock_ipc_ioctls;
+
+# Allow to reach block devices in /dev/block.
+allow tctd block_device:dir search;
+# Allow to read/write traceability block device.
+allow tctd traceability_block_device:blk_file rw_file_perms;
+
+# set properties
+set_prop(tctd, tct_default_prop)
+set_prop(tctd, t2m_sys_prop)
+
+# execute
+allow tctd vendor_file:file rx_file_perms;
+
+# TODO, why?
+allow tctd system_data_file:dir getattr;
+
+# mfg
+allow tctd mfg_device:blk_file { open read write };
+
+# MMITest
+set_prop(tctd, tct_audioloop_prop)
+allow tctd audio_device:dir search;
+allow tctd audio_device:chr_file rw_file_perms;
+allow tctd proc:file { getattr read open };
+
+# widevine key
+allow tctd tee_device:chr_file rw_file_perms;
+allow tctd firmware_file:dir r_dir_perms;
+allow tctd firmware_file:file r_file_perms;
+allow tctd ion_device:chr_file r_file_perms;
+
+# forkExecv function
+allow tctd self:process setexec;
+
+# mercury smartpa
+set_prop(tctd, smart_pa_prop)
+
+# t2m wifi macaddr
+allow tctd mnt_vendor_file:dir r_dir_perms;
+allow tctd mnt_vendor_file:dir search;
+allow tctd persist_t2m_param_file:file create_file_perms;
+allow tctd persist_t2m_param_file:dir create_dir_perms;
+
+# PM permition for diagnostics.
+allow tctd audio_device:dir search;
+allow tctd audio_device:chr_file { read write ioctl open };
+
+allow tctd vendor_shell_exec:file { getattr read execute open execute_no_trans };
+allow tctd vendor_audioftm_exec:file { getattr read execute open execute_no_trans };
+allow tctd tctd:capability { setgid };

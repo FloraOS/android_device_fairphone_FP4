@@ -1,0 +1,6 @@
+type tct_default_prop, property_type;
+type tct_audioloop_prop, property_type;
+type smart_pa_prop, property_type;
+type pdaf_camera_prop, property_type;
+type t2m_info_prop, property_type;
+type t2m_sys_prop, property_type;

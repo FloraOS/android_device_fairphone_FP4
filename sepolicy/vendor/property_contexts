@@ -1,0 +1,17 @@
+vendor.tct.                            u:object_r:tct_default_prop:s0
+ro.vendor.tct.                         u:object_r:tct_default_prop:s0
+persist.vendor.t2m.debug.hm            u:object_r:tct_audioloop_prop:s0
+persist.camera.stats.test              u:object_r:pdaf_camera_prop:s0
+persist.camera.stats.disablehaf        u:object_r:pdaf_camera_prop:s0
+vendor.tinfo.                          u:object_r:t2m_info_prop:s0
+
+persist.vendor.t2m.debug.              u:object_r:shell_prop:s0
+vendor.t2m.                            u:object_r:t2m_sys_prop:s0
+ro.vendor.t2m.                         u:object_r:t2m_sys_prop:s0
+
+
+vendor.t2m.disable.lpm                 u:object_r:system_prop:s0
+
+# storage path
+vendor.path.internal_storage           u:object_r:shell_prop:s0
+vendor.path.external_sd                u:object_r:shell_prop:s0
