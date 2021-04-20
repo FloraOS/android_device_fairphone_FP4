@@ -1,0 +1,86 @@
+type tct_diag_service, domain;
+type tct_diag_service_exec, exec_type, vendor_file_type, file_type;
+
+# Start by init
+init_daemon_domain(tct_diag_service)
+
+## common rules
+## use diag
+diag_use(tct_diag_service)
+## read/write sysfs files
+allow tct_diag_service sysfs:file rw_file_perms;
+
+## read/write visible storage
+# allow tct_diag_service { sdcard_type media_rw_data_file }:dir create_dir_perms;
+# allow tct_diag_service { sdcard_type media_rw_data_file }:file create_file_perms;
+allow tct_diag_service { mnt_user_file storage_file }:dir r_dir_perms;
+allow tct_diag_service { mnt_user_file storage_file }:lnk_file r_file_perms;
+## execute /vendor/bin/sh
+allow tct_diag_service vendor_shell_exec:file rx_file_perms;
+## execute /vendor/bin/toybox
+allow tct_diag_service vendor_toolbox_exec:file rx_file_perms;
+## allow to reach block devices in /dev/block.
+allow tct_diag_service block_device:dir search;
+
+## tct_audioloop_cmd.c:
+## set property: rw.tct.ftm.audio and ftm.dut.instance
+#set_prop(tct_diag_service, audio_loop_prop)
+## execute mm-audio-ftm (ftm.dut.instance)
+# allow tct_diag_service system_file:file rx_file_perms;
+allow tct_diag_service audio_device:dir search;
+allow tct_diag_service audio_device:chr_file rw_file_perms;
+
+## tct_debug_on.c:
+## set property sys.usb.config
+# set_prop(tct_diag_service, system_radio_prop)
+
+## tct_emmc_cmd.c:
+## read from /proc/partitions
+allow tct_diag_service proc:file r_file_perms;
+
+## tct_nv_bk.c:
+## access qmi service
+allow tct_diag_service self:socket create_socket_perms;
+allowxperm tct_diag_service self:socket ioctl msm_sock_ipc_ioctls;
+## create dirs and files in /cache
+# allow tct_diag_service cache_file:lnk_file r_file_perms;
+# allow tct_diag_service cache_file:dir create_dir_perms;
+# allow tct_diag_service cache_file:file create_file_perms;
+## read/write to tunning block device
+allow tct_diag_service vendor_modem_efs_partition_device:blk_file rw_file_perms;
+
+## tct_rdata.cpp:
+## find binder service tcl.alipay and tcl.fty.sec
+#allow tct_diag_service { alipay_service fty_service }:vndservicemanager find;
+## call secsvr via binder
+#binder_call(tct_diag_service, vndservicemanager);
+#binder_call(tct_diag_service, secsvr)
+
+## tct_sensors_check.c:
+## read sensors data
+allow tct_diag_service mnt_vendor_file:dir search;
+allow tct_diag_service vendor_persist_sensors_file:dir r_dir_perms;
+allow tct_diag_service vendor_persist_sensors_file:file r_file_perms;
+
+## tct_shutdown.c:
+## shutdown device
+allow tct_diag_service self:capability sys_boot;
+
+## tct_skd.c:
+## read/write/chmod file /oempersist/(FT.txt|MMI.txt)
+#allow tct_diag_service oem_persist_file:dir r_dir_perms;
+#allow tct_diag_service oem_persist_file:file create_file_perms;
+
+## tct_suspend.c:
+## read/write/ioctl /dev/input/event0
+allow tct_diag_service input_device:dir r_dir_perms;
+allow tct_diag_service input_device:chr_file rw_file_perms;
+
+## tct_trace_cmd.c:
+## read/write traceability block device
+allow tct_diag_service traceability_block_device:blk_file rw_file_perms;
+
+## tct_charging_on.c:
+## write to /sys/class/power_supply/battery/charging_enabled
+allow tct_diag_service vendor_sysfs_battery_supply:dir r_dir_perms;
+allow tct_diag_service vendor_sysfs_battery_supply:file w_file_perms;

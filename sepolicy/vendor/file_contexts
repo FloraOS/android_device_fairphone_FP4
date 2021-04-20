@@ -22,7 +22,9 @@
 
 # For tunning
 /dev/block/platform/soc/1d84000.ufshc/by-name/traceability                                  u:object_r:traceability_block_device:s0
+/dev/block/platform/soc/1d84000.ufshc/by-name/tunning                                       u:object_r:vendor_modem_efs_partition_device:s0
 
+/vendor/bin/tct_diag_service                                                                u:object_r:tct_diag_service_exec:s0
 /vendor/bin/tctd                                                                            u:object_r:tctd_exec:s0
 /dev/socket/tctd                                                                            u:object_r:tctd_socket:s0
 /mnt/vendor/persist/t2m_param(/.*)?                                                         u:object_r:persist_t2m_param_file:s0
