@@ -193,6 +193,9 @@ service dcvs-sh /vendor/bin/init.qti.dcvs.sh
 on property:vendor.dcvs.prop=1
    start dcvs-sh
 
+on property:ro.serialno=*
+    setprop ro.vendor.t2m.serialno ${ro.serialno}
+
 # config the awinic image audio
 on init
     chown audioserver audioserver /dev/awinic_haptic
