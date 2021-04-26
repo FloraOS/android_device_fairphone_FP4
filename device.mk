@@ -810,6 +810,14 @@ PRODUCT_PACKAGES += \
     android.hardware.sensors@2.0-ScopedWakelock.vendor \
     libsensorndkbridge
 
+SOONG_CONFIG_NAMESPACES += T2M
+SOONG_CONFIG_T2M := SENSOR_FLAG
+SOONG_CONFIG_T2M += SENSOR_TCS3707_FLAG
+SOONG_CONFIG_T2M += SENSOR_TCS3701_FLAG
+SOONG_CONFIG_T2M_SENSOR_FLAG ?= true
+SOONG_CONFIG_T2M_SENSOR_TCS3707_FLAG ?= true
+SOONG_CONFIG_T2M_SENSOR_TCS3701_FLAG ?= true
+
 # Sensor conf files
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.sensor.accelerometer.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.accelerometer.xml \
