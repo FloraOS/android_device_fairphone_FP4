@@ -693,6 +693,11 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.vendor.extension_library=libqti-perfd-client.so
 
 
+# We don't have the calibration data as this sort of
+# data can only be generated at the factory so don't generate persist.img
+TARGET_SKIP_PERSIST_IMG := true
+
+
 # Power
 PRODUCT_PACKAGES += \
     android.hardware.power-service

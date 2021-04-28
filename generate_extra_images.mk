@@ -56,6 +56,7 @@ define build-persistimage-target
     $(hide) $(call assert-max-image-size,$@,$(BOARD_PERSISTIMAGE_PARTITION_SIZE))
 endef
 
+ifneq ($(strip $(TARGET_SKIP_PERSIST_IMG)),true)
 $(INSTALLED_PERSISTIMAGE_TARGET): $(MKEXTUSERIMG) $(MAKE_EXT4FS) $(INTERNAL_PERSISTIMAGE_FILES)
 	$(build-persistimage-target)
 
@@ -66,6 +67,7 @@ droidcore: $(INSTALLED_PERSISTIMAGE_TARGET)
 .PHONY: persistimage
 persistimage: $(INSTALLED_PERSISTIMAGE_TARGET)
 
+endif #end of TARGET_SKIP_PERSIST_IMG
 endif
 endif
 
