@@ -1,0 +1,2 @@
+#add for aw vibrator in fp4 start
+genfscon sysfs /devices/platform/soc/990000.i2c/i2c-2/2-005a/leds/vibrator_aw8695 u:object_r:sysfs_leds:s0

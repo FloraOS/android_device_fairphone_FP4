@@ -46,6 +46,17 @@ on init
     symlink /dev/block/platform/soc/${ro.boot.bootdevice} /dev/block/bootdevice
     start vendor.qseecomd
     start keymaster-4-0
+    chown system system /sys/class/leds/vibrator_aw8695/trigger
+    chown system system /sys/class/leds/vibrator_aw8695/activate
+    chown system system /sys/class/leds/vibrator_aw8695/brightness
+    chown system system /sys/class/leds/vibrator_aw8695/duration
+    chown system system /sys/class/leds/vibrator_aw8695/state
+    chown system system /sys/class/leds/vibrator_aw8695/loop
+    chown system system /sys/class/leds/vibrator_aw8695/seq
+    chown system system /sys/class/leds/vibrator_aw8695/index
+    chown system system /sys/class/leds/vibrator_aw8695/enable
+    chown system system /sys/class/leds/vibrator_aw8695/rtp
+    chown system system /sys/class/leds/vibrator_aw8695/activate_mode
 
 on early-fs
     start vold
@@ -162,3 +173,58 @@ service dcvs-sh /vendor/bin/init.qti.dcvs.sh
 
 on property:vendor.dcvs.prop=1
    start dcvs-sh
+
+# config the awinic image audio
+on init
+    chown audioserver audioserver /dev/awinic_haptic
+    chown audioserver audioserver /sys/class/leds/vibrator_aw8695/haptic_audio
+    chown audioserver audioserver /sys/calss/leds/vibrator_aw8695/gun_type
+    chown audioserver audioserver /sys/class/leds/vibrator_aw8695/bullet_nr
+    chown audioserver audioserver /sys/class/leds/vibrator_aw8695/activate
+    chown audioserver audioserver /sys/class/leds/vibrator_aw8695/register
+    chmod 777 /sys/class/leds/vibrator_aw8695/gun_type
+    chmod 777 /sys/class/leds/vibrator_aw8695/bullet_nr
+    chmod 777 /sys/class/leds/vibrator_aw8695/activate
+    chmod 777 /sys/class/leds/vibrator_aw8695/register
+
+service hapticscreencap /system/system_ext/bin/hapticscreencap
+    class main
+    user root
+    group root audioserver audio system
+    disabled
+
+service hapticImgScreencap    /system/system_ext/bin/hapticscreencap
+    class main
+    user  root
+    group root audioserver audio system
+    disabled
+
+service hapticQqFly    /system/system_ext/bin/hapticscreencap 1
+    class main
+    user  root
+    group root audioserver audio system
+    disabled
+
+service hapticWildRacing    /system/system_ext/bin/hapticscreencap 2
+    class main
+    user  root
+    group root audioserver audio system
+    disabled
+
+service hapticPeaceElite   /system/system_ext/bin/hapticscreencap 3
+    class main
+    user  root
+    group root audioserver audio system
+    disabled
+
+service hapticPeaceEliteImage   /system/system_ext/bin/hapticscreencap 4
+    class main
+    user  root
+    group root audioserver audio system
+    disabled
+
+service hapticCallOfDuty   /system/system_ext/bin/hapticscreencap 5
+    class main
+    user  root
+    group root audioserver audio system
+    disabled
