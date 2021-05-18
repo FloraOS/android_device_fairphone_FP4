@@ -1,0 +1,28 @@
+# tct_diag_mdlog
+# 20200521 tommy.kim [#16706] Implemented QXDM logging
+type qlogd_data_file, file_type, data_file_type;
+#allow qlogd tct_data_endusertest:dir { r_dir_perms  };
+#allow qlogd tct_data_endusertest:file { r_file_perms  };
+allow vendor_qlogd sdcardfs:dir { create_dir_perms  };
+allow vendor_qlogd sdcardfs:file { create_file_perms  };
+
+#allow qlogd media_rw_data_file:dir getattr;
+#allow qlogd media_rw_data_file:dir { create_dir_perms  };
+#allow qlogd media_rw_data_file:file { create_file_perms  };
+r_dir_file(vendor_qlogd, storage_file)
+r_dir_file(vendor_qlogd, mnt_user_file)
+diag_use(vendor_qlogd)
+
+#Begin, wushaohua add to collect QXDM log by 0574
+userdebug_or_eng(`
+    permissive vendor_qlogd;
+')
+# End
+
+# START 20200521 tommy.kim [#16706] Implemented QXDM logging
+allow vendor_qlogd qlogd_data_file:dir rw_dir_perms;
+allow vendor_qlogd qlogd_data_file:dir { add_name create write remove_name setattr search read};
+allow vendor_qlogd qlogd_data_file:file rw_file_perms;
+allow vendor_qlogd qlogd_data_file:file { create getattr open read write unlink rename };
+# END 20200521 tommy.kim [#16706] Implemented QXDM logging
+
