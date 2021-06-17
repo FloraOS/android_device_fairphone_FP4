@@ -826,6 +826,12 @@ PRODUCT_PACKAGES += \
     android.hardware.usb@1.2-service-qti
 
 
+# Userdata
+# Prebuilt userdata image triggers storage formatting on boot.
+# Required to adjust for different storage sizes of FP4 models.
+BOARD_PREBUILT_USERDATAIMAGE := $(FP_PATH)/userdata.img
+
+
 # Userdata checkpoint
 PRODUCT_PACKAGES += \
     checkpoint_gc
