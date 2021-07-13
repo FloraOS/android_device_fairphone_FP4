@@ -13,8 +13,8 @@ allow tctd block_device:dir search;
 allow tctd traceability_block_device:blk_file rw_file_perms;
 
 # set properties
-set_prop(tctd, tct_default_prop)
-set_prop(tctd, t2m_sys_prop)
+set_prop(tctd, vendor_tct_default_prop)
+set_prop(tctd, vendor_t2m_sys_prop)
 
 # execute
 allow tctd vendor_file:file rx_file_perms;
@@ -26,7 +26,6 @@ allow tctd system_data_file:dir getattr;
 allow tctd mfg_device:blk_file { open read write };
 
 # MMITest
-set_prop(tctd, tct_audioloop_prop)
 allow tctd audio_device:dir search;
 allow tctd audio_device:chr_file rw_file_perms;
 allow tctd proc:file { getattr read open };
