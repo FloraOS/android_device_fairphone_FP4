@@ -26,3 +26,6 @@ allow vendor_qlogd qlogd_data_file:file rw_file_perms;
 allow vendor_qlogd qlogd_data_file:file { create getattr open read write unlink rename };
 # END 20200521 tommy.kim [#16706] Implemented QXDM logging
 
+allow vendor_qlogd fuse:dir create_dir_perms;
+allow vendor_qlogd fuse:file create_file_perms;
+
