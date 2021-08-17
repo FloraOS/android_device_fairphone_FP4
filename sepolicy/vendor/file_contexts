@@ -11,3 +11,5 @@
 
 /dev/fpsensor                                                                               u:object_r:fpsensor_fp_device:s0
 /data/fpsensor(/.*)?                                                                        u:object_r:fpsensor_data_file:s0
+
+/dev/block/platform/soc/1d84000.ufshc/by-name/oempersist                                    u:object_r:vendor_oempersist_block_device:s0
