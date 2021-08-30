@@ -684,6 +684,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
     debug.stagefright.omx_default_rank=0 \
     media.settings.xml=/vendor/etc/media_profiles_vendor.xml
 
+# Media Performance Class 11
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.odm.build.media_performance_class=30
+
 PRODUCT_PACKAGES += \
     libcodec2_vndk.vendor \
     libcodec2_hidl@1.0.vendor
