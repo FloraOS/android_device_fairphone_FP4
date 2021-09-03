@@ -22,6 +22,10 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_base_telephony.mk)
 PRODUCT_SHIPPING_API_LEVEL := 30
 SHIPPING_API_LEVEL := 30
 
+# GRF levels
+BOARD_SHIPPING_API_LEVEL := 30
+BOARD_API_LEVEL := 30
+
 
 PRODUCT_BRAND := Fairphone
 PRODUCT_DEVICE := FP4
@@ -578,6 +582,11 @@ PRODUCT_PACKAGES += \
 # Logwrapper
 PRODUCT_PACKAGES += \
     liblogwrap
+
+
+# Manufacturer
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.soc.manufacturer=QTI
 
 
 # Media
