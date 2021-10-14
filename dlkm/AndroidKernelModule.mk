@@ -120,6 +120,20 @@ define sign_module
 	      cp $1 $1.unsigned; \
 	      $(MODULE_SIGN_FILE) \$$KMOD_SIG_HASH $(MODSECKEY) $(MODPUBKEY) $1; \
 	   fi; \
+	   signed=`find $(TARGET_OUT_VENDOR) -type f -name tfs_linux.ko;`; \
+	   unsigned=`find $(PRODUCT_OUT) -maxdepth 1 -type f -name tfs_linux.ko;` ; \
+	   if [ -n \"\$$unsigned\" ] && [ -z \"\$$signed\" ]; then \
+	       echo \"Signing kernel module: tfs_linux.ko\"; \
+	       $(MODULE_SIGN_FILE) \$$KMOD_SIG_HASH $(MODSECKEY) $(MODPUBKEY) $(DRIVER_UNSIGNED_PATH)/tfs_linux.ko $(DRIVER_SIGNED_PATH)/tfs_linux.ko; \
+	       echo \"Signing complete\" ; \
+	   fi; \
+	   signed=`find $(TARGET_OUT_VENDOR) -type f -name texfat.ko;`; \
+	   unsigned=`find $(PRODUCT_OUT) -maxdepth 1 -type f -name texfat.ko;` ; \
+	   if [ -n \"\$$unsigned\" ] && [ -z \"\$$signed\" ]; then \
+	       echo \"Signing kernel module: texfat.ko\"; \
+	       $(MODULE_SIGN_FILE) \$$KMOD_SIG_HASH $(MODSECKEY) $(MODPUBKEY) $(DRIVER_UNSIGNED_PATH)/texfat.ko $(DRIVER_SIGNED_PATH)/texfat.ko; \
+	       echo \"Signing complete\" ; \
+	   fi; \
 	"
 endef
 
