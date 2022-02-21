@@ -26,6 +26,7 @@
 #
 
 on init
+    wait /sys/devices/platform/soc/a600000.ssusb/a600000.dwc3/driver 10
     write /sys/class/backlight/panel0-backlight/brightness 200
     setprop sys.usb.configfs 1
 
