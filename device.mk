@@ -295,6 +295,11 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.camera.raw.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.camera.raw.xml
 
 
+# Compile SystemUI on device with `speed`.
+PRODUCT_PROPERTY_OVERRIDES = \
+    dalvik.vm.systemuicompilerfilter=speed
+
+
 # Dalvik/Heap
 $(call inherit-product, frameworks/native/build/phone-xhdpi-6144-dalvik-heap.mk)
 
