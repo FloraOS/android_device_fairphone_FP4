@@ -10,3 +10,6 @@ allow system_app fpsensor_data_file:dir { search };
 allow system_app hal_fingerprint_default:fd {use};
 
 allow system_app fp_hardware_version:file r_file_perms;
+
+get_prop(system_app, vendor_tct_default_prop)
+get_prop(system_app, vendor_t2m_sys_prop)

@@ -3,3 +3,5 @@ hal_client_domain(platform_app, hal_display_iris)
 
 # Allow NFC app to use service_manager
 allow platform_app nfc_service:service_manager find;
+
+get_prop(platform_app, vendor_t2m_sys_prop)
