@@ -168,6 +168,7 @@ BOARD_KERNEL_CMDLINE := androidboot.console=ttyMSM0
 BOARD_KERNEL_CMDLINE += androidboot.hardware=qcom
 BOARD_KERNEL_CMDLINE += androidboot.memcg=1
 BOARD_KERNEL_CMDLINE += androidboot.usbcontroller=a600000.dwc3
+BOARD_KERNEL_CMDLINE += cgroup_disable=pressure
 BOARD_KERNEL_CMDLINE += cgroup.memory=nokmem,nosocket
 BOARD_KERNEL_CMDLINE += earlycon=msm_geni_serial,0x888000
 BOARD_KERNEL_CMDLINE += loop.max_part=7
