@@ -80,7 +80,6 @@ endif
 
 # Bluetooth
 BOARD_ANT_WIRELESS_DEVICE := "qualcomm-hidl"
-BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(FP_PATH)/bluetooth
 BOARD_HAVE_BLUETOOTH := true
 
 
