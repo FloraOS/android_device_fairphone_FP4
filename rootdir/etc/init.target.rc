@@ -57,6 +57,8 @@ on init
     chown system system /sys/class/leds/vibrator_aw8695/enable
     chown system system /sys/class/leds/vibrator_aw8695/rtp
     chown system system /sys/class/leds/vibrator_aw8695/activate_mode
+    chmod 0660 /dev/fpsensor
+    chown system system /dev/fpsensor
 
 on early-fs
     start vold
