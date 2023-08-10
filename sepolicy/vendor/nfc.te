@@ -1,0 +1,4 @@
+allow nfc vendor_nfc_vendor_data_file:file { open read getattr};
+allow nfc vendor_nfc_vendor_data_file:dir search;
+allow nfc nxpnfc_hwservice:hwservice_manager find;
+allow nfc nfc_device:chr_file { ioctl open read write };
