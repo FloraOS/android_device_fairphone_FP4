@@ -700,6 +700,11 @@ PRODUCT_PACKAGES += \
 PRODUCT_COPY_FILES += \
     vendor/qcom/opensource/power/config/lito/powerhint.xml:$(TARGET_COPY_OUT_VENDOR)/etc/powerhint.xml
 
+# Pasr manager
+PRODUCT_PROPERTY_OVERRIDES += \
+    vendor.power.pasr.enabled=true \
+    vendor.pasr.activemode.enabled=true
+
 
 # privapp-permissions whitelisting (To Fix CTS :privappPermissionsMustBeEnforced)
 PRODUCT_PROPERTY_OVERRIDES += ro.control_privapp_permissions=enforce
