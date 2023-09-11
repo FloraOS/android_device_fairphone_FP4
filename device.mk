@@ -825,6 +825,9 @@ PRODUCT_PROPERTY_OVERRIDES += vendor.usb.use_ffs_mtp=0
 PRODUCT_PACKAGES += \
     android.hardware.usb@1.2-service-qti
 
+# Use prebuilt metadata.img from radio files instead of building
+# from source.
+BOARD_USE_PREBUILT_METADATAIMAGE := true
 
 # Userdata
 # Prebuilt userdata image triggers storage formatting on boot.

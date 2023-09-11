@@ -75,6 +75,7 @@ endif
 # so create an empty fs
 #----------------------------------------------------------------------
 ifneq ($(strip $(BOARD_METADATAIMAGE_PARTITION_SIZE)),)
+ifneq ($(strip $(BOARD_USE_PREBUILT_METADATAIMAGE)), true)
 
 TARGET_OUT_METADATA := $(PRODUCT_OUT)/metadata
 
@@ -97,6 +98,7 @@ droidcore: $(INSTALLED_METADATAIMAGE_TARGET)
 .PHONY: metadataimage
 metadataimage: $(INSTALLED_METADATAIMAGE_TARGET)
 
+endif
 endif
 
 #----------------------------------------------------------------------
