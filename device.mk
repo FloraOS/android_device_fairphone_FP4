@@ -888,6 +888,10 @@ TARGET_MOUNT_POINTS_SYMLINKS := false
 PRODUCT_PROPERTY_OVERRIDES += vendor.usb.diag.func.name=diag
 PRODUCT_PROPERTY_OVERRIDES += vendor.usb.use_ffs_mtp=0
 
+ifneq ($(TARGET_BUILD_VARIANT),user)
+    PRODUCT_PROPERTY_OVERRIDES += persist.vendor.usb.config=diag,adb
+endif
+
 PRODUCT_PACKAGES += \
     android.hardware.usb@1.2-service-qti
 
