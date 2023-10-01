@@ -290,6 +290,11 @@ PRODUCT_PROPERTY_OVERRIDES  += \
     dalvik.vm.heaptargetutilization=0.75
 
 
+# Use 64-bit dex2oat for better dexopt time.
+PRODUCT_PROPERTY_OVERRIDES += \
+    dalvik.vm.dex2oat64.enabled=true
+
+
 # Display
 PRODUCT_PACKAGES += \
     android.hardware.graphics.mapper@3.0-impl-qti-display \
