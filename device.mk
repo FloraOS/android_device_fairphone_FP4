@@ -211,7 +211,6 @@ PRODUCT_PACKAGES += \
     android.hardware.bluetooth.audio@2.0-impl \
     android.hardware.bluetooth@1.0 \
     bt_stack.conf \
-    libbluetooth-binder \
     libbluetooth_audio_session \
     libchrome \
     libchrome.vendor \
