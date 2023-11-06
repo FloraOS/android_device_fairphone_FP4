@@ -689,8 +689,18 @@ PRODUCT_PACKAGES += \
     librecovery_updater_msm
 
 
-# NFC
-$(call inherit-product, vendor/st/nfc/st21nfc/NfcDeviceConfig.mk)
+# NFC (ST stack)
+$(call inherit-product, vendor/st/nfc/st21nfc/NfcDeviceConfigVendor.st21nfc.mk)
+
+# rc file
+PRODUCT_PACKAGES += \
+    init.stnfc.rc
+
+# NFC Config files
+PRODUCT_COPY_FILES += \
+    $(FP_PATH)/nfc/libnfc-hal-st.conf:$(TARGET_COPY_OUT_VENDOR)/etc/libnfc-hal-st.conf:st \
+    $(FP_PATH)/nfc/libnfc-nci.conf:$(TARGET_COPY_OUT_VENDOR)/etc/libnfc-nci.conf:st \
+    $(FP_PATH)/nfc/st21nfc_conf.txt:$(TARGET_COPY_OUT_VENDOR)/etc/st21nfc_conf.txt
 
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.st_nfc_defaut_se=SIM1 \

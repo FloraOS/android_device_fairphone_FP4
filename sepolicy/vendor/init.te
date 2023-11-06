@@ -2,6 +2,8 @@ allow init fpsensor_fp_device:chr_file {write};
 
 allow vendor_init vendor_oempersist_block_device:{ blk_file lnk_file } relabelto;
 
+set_prop(vendor_init, vendor_st_nfc_prop)
+
 set_prop(init, vendor_t2m_sys_prop)
 set_prop(init, vendor_tct_default_prop)
 
