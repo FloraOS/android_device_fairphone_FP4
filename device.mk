@@ -316,6 +316,9 @@ PRODUCT_PACKAGES += \
     vendor.display.config@1.14 \
     vendor.qti.hardware.display.allocator-service
 
+PRODUCT_PACKAGES += \
+    init.qti.display_boot.sh
+
 # From hardware/qcom/display/config/display-product.mk
 include $(FP_PATH)/display-product.mk
 
