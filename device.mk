@@ -157,14 +157,10 @@ AUDIO_DLKM += audio_swr_ctrl.ko
 AUDIO_DLKM += audio_tx_macro.ko
 AUDIO_DLKM += audio_usf.ko
 AUDIO_DLKM += audio_va_macro.ko
-AUDIO_DLKM += audio_wcd937x.ko
-AUDIO_DLKM += audio_wcd937x_slave.ko
 AUDIO_DLKM += audio_wcd938x.ko
 AUDIO_DLKM += audio_wcd938x_slave.ko
 AUDIO_DLKM += audio_wcd9xxx.ko
 AUDIO_DLKM += audio_wcd_core.ko
-AUDIO_DLKM += audio_wsa881x.ko
-AUDIO_DLKM += audio_wsa883x.ko
 AUDIO_DLKM += audio_wsa_macro.ko
 AUDIO_DLKM += audio_apr.ko
 

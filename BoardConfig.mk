@@ -227,14 +227,10 @@ BOARD_VENDOR_KERNEL_MODULES := \
     $(KERNEL_MODULES_OUT)/audio_tx_macro.ko \
     $(KERNEL_MODULES_OUT)/audio_usf.ko \
     $(KERNEL_MODULES_OUT)/audio_va_macro.ko \
-    $(KERNEL_MODULES_OUT)/audio_wcd937x.ko \
-    $(KERNEL_MODULES_OUT)/audio_wcd937x_slave.ko \
     $(KERNEL_MODULES_OUT)/audio_wcd938x.ko \
     $(KERNEL_MODULES_OUT)/audio_wcd938x_slave.ko \
     $(KERNEL_MODULES_OUT)/audio_wcd9xxx.ko \
     $(KERNEL_MODULES_OUT)/audio_wcd_core.ko \
-    $(KERNEL_MODULES_OUT)/audio_wsa881x.ko \
-    $(KERNEL_MODULES_OUT)/audio_wsa883x.ko \
     $(KERNEL_MODULES_OUT)/audio_wsa_macro.ko \
     $(KERNEL_MODULES_OUT)/lcd.ko \
     $(KERNEL_MODULES_OUT)/llcc_perfmon.ko \
