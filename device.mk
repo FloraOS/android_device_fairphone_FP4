@@ -955,7 +955,11 @@ SOONG_CONFIG_qtidisplaycommonsys_displayconfig_enabled := true
 # lights
 SOONG_CONFIG_NAMESPACES += lights
 SOONG_CONFIG_lights += lighttargets
+ifeq ($(PLATFORM_VERSION), 11)
 SOONG_CONFIG_lights_lighttargets := lightaidltarget
+else
+SOONG_CONFIG_lights_lighttargets := lightaidlV1target
+endif
 
 
 # Inherit the proprietary setup

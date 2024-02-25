@@ -31,7 +31,7 @@ lights_cc_defaults {
             },
             lightaidlV1target: {
                  shared_libs: [
-                       "android.hardware.light-V1-ndk_platform",
+                       "android.hardware.light-V1-ndk",
                   ],
             },
         },
