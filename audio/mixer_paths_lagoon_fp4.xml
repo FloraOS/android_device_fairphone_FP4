@@ -3507,6 +3507,26 @@
         <path name="handset" />
     </path>
 
+    <path name="main-mic">
+        <ctl name="TX_CDC_DMA_TX_3 Channels" value="One" />
+        <path name="amic1" />
+    </path>
+
+    <path name="sub-mic">
+        <ctl name="TX_CDC_DMA_TX_3 Channels" value="One" />
+        <path name="amic3" />
+    </path>
+
+    <path name="third-mic">
+        <ctl name="TX_CDC_DMA_TX_3 Channels" value="One" />
+        <path name="amic4" />
+    </path>
+
+    <path name="fourth-mic">
+        <ctl name="TX_CDC_DMA_TX_3 Channels" value="One" />
+        <path name="amic5" />
+    </path>
+
     <path name="voice-hac">
         <ctl name="RX_MACRO RX0 MUX" value="AIF1_PB" />
         <ctl name="RX_CDC_DMA_RX_0 Channels" value="One" />
