@@ -70,6 +70,13 @@ AB_OTA_POSTINSTALL_CONFIG += \
 BOARD_DYNAMIC_PARTITION_ENABLE := true # Enable dynamic partitions by default
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
 
+
+# Propagate platform SPL also to boot and vendor properties. Gets included in AVB metadata as well,
+# which needs to be consistent in order for OTAs to apply.
+BOOT_SECURITY_PATCH := $(PLATFORM_SECURITY_PATCH)
+VENDOR_SECURITY_PATCH := $(PLATFORM_SECURITY_PATCH)
+
+
 # Also, there is no need to build an OTA package as this will be done later
 # when we combine this system build with the non-system images.
 TARGET_SKIP_OTA_PACKAGE := true
