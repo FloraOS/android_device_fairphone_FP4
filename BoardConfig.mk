@@ -30,6 +30,26 @@ AB_OTA_PARTITIONS += \
     recovery \
     vendor
 
+# Radio/modem A/B partitions
+AB_OTA_PARTITIONS +=\
+    abl \
+    aop \
+    bluetooth \
+    core_nhlos \
+    devcfg \
+    dsp \
+    featenabler \
+    hyp \
+    imagefv \
+    keymaster \
+    modem \
+    multiimgoem \
+    qupfw \
+    tz \
+    uefisecapp \
+    xbl \
+    xbl_config
+
 
 # Adreno
 BOARD_USES_ADRENO := true
