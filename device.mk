@@ -441,7 +441,7 @@ PRODUCT_PACKAGES += \
 
 
 # GPS
-LOC_HIDL_VERSION = 4.0
+LOC_HIDL_VERSION = 4.3
 
 PRODUCT_PACKAGES += \
     android.hardware.gnss@2.1-impl-qti \
