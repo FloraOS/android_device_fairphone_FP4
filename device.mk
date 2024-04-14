@@ -456,6 +456,11 @@ PRODUCT_PACKAGES += \
     libloc_core \
     liblocation_api
 
+PRODUCT_PACKAGES += \
+    gnss@2.0-base.policy \
+    gnss@2.0-xtra-daemon.policy \
+    gnss@2.0-xtwifi-client.policy
+
 ifneq ($(QCPATH),)
 PRODUCT_PACKAGES += \
     libgnsspps \
