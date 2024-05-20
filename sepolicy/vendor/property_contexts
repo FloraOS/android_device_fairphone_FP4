@@ -10,4 +10,4 @@ ro.vendor.t2m.                          u:object_r:vendor_t2m_sys_prop:s0
 vendor.t2m.disable.lpm                  u:object_r:vendor_t2m_sys_prop:s0
 
 # NFC (ST stack)
-persist.st_nfc_defaut_se                u:object_r:vendor_st_nfc_prop:s0 exact string
+persist.vendor.st_nfc_defaut_se         u:object_r:vendor_st_nfc_prop:s0

@@ -718,7 +718,7 @@ PRODUCT_COPY_FILES += \
     $(FP_PATH)/nfc/st21nfc_conf.txt:$(TARGET_COPY_OUT_VENDOR)/etc/st21nfc_conf.txt
 
 PRODUCT_PROPERTY_OVERRIDES += \
-    persist.st_nfc_defaut_se=SIM1 \
+    persist.vendor.st_nfc_defaut_se=SIM1 \
     ro.hardware.nfc_nci=pn54x
 
 
