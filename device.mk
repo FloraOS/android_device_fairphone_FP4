@@ -13,6 +13,11 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
 # Inherit GSI keys to first stage ramdisk
 $(call inherit-product, $(SRC_TARGET_DIR)/product/gsi_keys.mk)
 
+# For PRODUCT_COPY_FILES, the first instance takes precedence.
+# Since we want use QC specific files, we should inherit
+# device-vendor.mk first to make sure QC specific files gets installed.
+$(call inherit-product-if-exists, $(QCPATH)/common/config/device-vendor.mk)
+
 # Inherit generic AOSP content for telephony based 64-bit devices
 $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_base_telephony.mk)
