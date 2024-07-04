@@ -1037,3 +1037,7 @@ $(call inherit-product, $(FP4_PROPRIETARY_PATH)/device-vendor.mk)
 # Build some more display components to vendor
 $(call inherit-product, vendor/qcom/opensource/commonsys-intf/display/config/display-interfaces-product.mk)
 ###################################################################################
+# Now, Pickup other split product.mk files:
+###################################################################################
+$(call inherit-product-if-exists, vendor/qcom/defs/product-defs/vendor/*.mk)
+###################################################################################

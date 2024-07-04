@@ -363,5 +363,12 @@ WIFI_DRIVER_STATE_OFF := "OFF"
 WIFI_DRIVER_STATE_ON := "ON"
 
 
+#################################################################################
+# This is the End of BoardConfig.mk file.
+# Now, Pickup other split Board.mk files:
+#################################################################################
+-include vendor/qcom/defs/board-defs/vendor/*.mk
+#################################################################################
+
 # Vendor-specific definitions
 -include vendor/fairphone/fp4/BoardConfigVendor.mk
