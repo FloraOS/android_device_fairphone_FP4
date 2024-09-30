@@ -1,2 +1,3 @@
 nfc_settings                              u:object_r:nfc_service:s0
 nfc.st_ext                                u:object_r:nfc_service:s0
+mmitest                                   u:object_r:mmitest_service:s0

@@ -2,6 +2,7 @@ type fpsensor_data_file, file_type, data_file_type, core_data_file_type;
 type fp_hardware_version, fs_type, sysfs_type;
 
 #MMITest
+type mmi_app_data_file, file_type, data_file_type, core_data_file_type;
 type sysfs_t2m_mmi, fs_type, sysfs_type;
 type tctd_socket, file_type, mlstrustedobject;
 type tct_mmi_proc, sysfs_type, fs_type ,proc_type;

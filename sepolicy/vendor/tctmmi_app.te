@@ -1,0 +1,61 @@
+type tctmmi_app, domain;
+app_domain(tctmmi_app)
+binder_use(tctmmi_app)
+unix_socket_connect(tctmmi_app, tctd, tctd);
+
+#service
+allow tctmmi_app {
+    activity_service
+    nfc_service
+    mediaserver_service
+    audio_service
+    autofill_service
+    surfaceflinger_service
+    sensorservice_service
+    wifi_service
+    location_service
+    audioserver_service
+    trust_service
+    app_api_service
+    bluetooth_manager_service
+    radio_service
+    cameraserver_service
+}:service_manager { find };
+
+# File and directory access
+r_dir_file(tctmmi_app, sysfs_leds)
+r_dir_file(tctmmi_app, mnt_media_rw_file)
+r_dir_file(tctmmi_app, mnt_vendor_file)
+r_dir_file(tctmmi_app, vendor_firmware_file)
+r_dir_file(tctmmi_app, vendor_sysfs_battery_supply)
+r_dir_file(tctmmi_app, vendor_camera_data_file)
+r_dir_file(tctmmi_app, vendor_sysfs_graphics)
+r_dir_file(tctmmi_app, vendor_sysfs_usb_supply)
+
+# Properties
+set_prop(tctmmi_app, vendor_pdaf_camera_prop)
+set_prop(tctmmi_app, vendor_camera_prop)
+set_prop(tctmmi_app, system_prop)
+set_prop(tctmmi_app, vendor_t2m_sys_prop)
+set_prop(tctmmi_app, vendor_sensors_prop)
+set_prop(tctmmi_app, vendor_audio_prop)
+set_prop(tctmmi_app, vendor_bt_prop)
+set_prop(tctmmi_app, exported_system_radio_prop)
+set_prop(tctmmi_app, exported_system_prop)
+get_prop(tctmmi_app, vendor_tct_default_prop)
+get_prop(tctmmi_app, vendor_t2m_sys_prop)
+get_prop(tctmmi_app, vendor_audio_prop)
+
+# Specific file types
+allow tctmmi_app tctd_socket:sock_file write;
+allow tctmmi_app sysfs_t2m_mmi:file rw_file_perms;
+allow tctmmi_app tct_mmi_proc:file rw_file_perms;
+allow tctmmi_app cgroup:file { write open };
+allow tctmmi_app sysfs:file r_file_perms;
+allow tctmmi_app t2m_serial_device:chr_file { ioctl open read write };
+allow tctmmi_app vendor_audio_device:chr_file { read write open ioctl };
+allow tctmmi_app vendor_persist_camera_prop:file read;
+
+# Binder calls
+allow tctmmi_app gpuservice:binder call;
+allow tctmmi_app hal_fingerprint_default:binder { call transfer };

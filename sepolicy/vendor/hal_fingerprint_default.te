@@ -11,5 +11,7 @@ type fp_ext_svc2_service, hwservice_manager_type;
 allow hal_fingerprint_default  fp_ext_svc2_service:hwservice_manager {add};
 allow platform_app     fp_ext_svc2_service:hwservice_manager {find};
 allow system_app     fp_ext_svc2_service:hwservice_manager {find};
+allow tctmmi_app fp_ext_svc2_service:hwservice_manager { find };
+allow hal_fingerprint_default tctmmi_app:binder { call };
 
 set_prop(hal_fingerprint_default, vendor_t2m_sys_prop)
