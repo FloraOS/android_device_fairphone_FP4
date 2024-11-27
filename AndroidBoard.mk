@@ -30,6 +30,7 @@ TARGET_KERNEL_MAKE_ENV += HOSTLD=$(TEMP_TOP)/prebuilts/gcc/linux-x86/host/x86_64
 TARGET_KERNEL_MAKE_ENV += HOSTCFLAGS="-I/usr/include -I/usr/include/x86_64-linux-gnu -L/usr/lib -L/usr/lib/x86_64-linux-gnu -fuse-ld=lld"
 TARGET_KERNEL_MAKE_ENV += HOSTLDFLAGS="-L/usr/lib -L/usr/lib/x86_64-linux-gnu -fuse-ld=lld"
 
+TARGET_KERNEL_MAKE_ENV += CC=$(TEMP_TOP)/$(SOONG_LLVM_PREBUILTS_PATH)/clang
 TARGET_KERNEL_MAKE_ENV += BINDGEN=$(TEMP_TOP)/$(HOST_OUT_EXECUTABLES)/bindgen
 TARGET_KERNEL_MAKE_ENV += CPIO=$(TEMP_TOP)/prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/cpio
 TARGET_KERNEL_MAKE_ENV += DEPMOD=$(TEMP_TOP)/$(HOST_OUT_EXECUTABLES)/depmod
@@ -37,12 +38,6 @@ TARGET_KERNEL_MAKE_ENV += LEX=$(TEMP_TOP)/prebuilts/build-tools/$(HOST_PREBUILT_
 TARGET_KERNEL_MAKE_ENV += M4=$(TEMP_TOP)/prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/m4
 TARGET_KERNEL_MAKE_ENV += YACC=$(TEMP_TOP)/prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/bison
 
-
-#Enable llvm support for kernel
-KERNEL_LLVM_SUPPORT := true
-
-#Enable sd-llvm suppport for kernel
-KERNEL_SD_LLVM_SUPPORT := false
 
 # Build kernel
 include $(TARGET_KERNEL_SOURCE)/AndroidKernel.mk
