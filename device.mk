@@ -26,6 +26,15 @@ SHIPPING_API_LEVEL := 30
 PRODUCT_BRAND := Fairphone
 PRODUCT_DEVICE := FP4
 PRODUCT_MANUFACTURER := Fairphone
+PRODUCT_MODEL := FP4
+PRODUCT_NAME := FP4
+
+# Actual product name is slightly different. Hence, use the actual name
+# only in fingerprint while keeping it as FP4 everywhere else.
+TARGET_PRODUCT_OVERRIDE := FP4eea
+PRODUCT_BUILD_PROP_OVERRIDES += \
+    PRODUCT_NAME=$(TARGET_PRODUCT_OVERRIDE) \
+    TARGET_PRODUCT=$(TARGET_PRODUCT_OVERRIDE)
 
 TARGET_BOARD_PLATFORM := lito
 
