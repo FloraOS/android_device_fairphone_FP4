@@ -80,6 +80,10 @@ PRODUCT_PACKAGES += \
     init.mdm.sh \
     fstab.default
 
+# Fstab for ramdisk
+PRODUCT_COPY_FILES += \
+    $(FP_PATH)/rootdir/etc/fstab_AB_dynamic_partition.qti:$(TARGET_COPY_OUT_RAMDISK)/fstab.default
+
 PRODUCT_PACKAGES_DEBUG += \
     init.qcom.debug.sh \
     init.qcom.debug-sdm660.sh \
