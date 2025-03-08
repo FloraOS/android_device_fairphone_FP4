@@ -1,0 +1,262 @@
+// files that live under device/qcom/common/rootdir/etc/
+
+prebuilt_etc {
+    name: "init.qcom.factory.rc",
+    src: "etc/init.qcom.factory.rc",
+    sub_dir: "init/hw",
+    vendor: true,
+}
+
+prebuilt_etc {
+    name: "init.qcom.rc",
+    src: "etc/init.qcom.rc",
+    sub_dir: "init/hw",
+    vendor: true,
+}
+
+prebuilt_etc {
+    name: "init.qcom.test.rc",
+    src: "etc/init.qcom.test.rc",
+    sub_dir: "init/hw",
+    vendor: true,
+}
+
+prebuilt_etc {
+    name: "init.recovery.qcom.rc",
+    src: "etc/init.recovery.qcom.rc",
+    sub_dir: "init",
+    recovery: true,
+}
+
+prebuilt_etc {
+    name: "init.stnfc.rc",
+    src: "etc/init.stnfc.rc",
+    sub_dir: "init/hw",
+    vendor: true,
+}
+
+prebuilt_etc {
+    name: "init.target.rc",
+    src: "etc/init.target.rc",
+    sub_dir: "init/hw",
+    vendor: true,
+}
+
+prebuilt_etc {
+    name: "ueventd.qcom.rc",
+    filename: "ueventd.rc",
+    src: "etc/ueventd.qcom.rc",
+    vendor: true,
+}
+
+prebuilt_etc {
+    name: "fstab.default",
+    src: "etc/fstab_AB_dynamic_partition.qti",
+    vendor: true,
+}
+
+prebuilt_etc {
+    name: "recovery_AB_variant.fstab",
+    src: "etc/recovery_AB_variant.fstab",
+    vendor: true,
+}
+
+
+sh_binary {
+    name: "init.class_main.sh",
+    src: "etc/init.class_main.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.crda.sh",
+    src: "etc/init.crda.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.mdm.sh",
+    src: "etc/init.mdm.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qcom.class_core.sh",
+    src: "etc/init.qcom.class_core.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qcom.coex.sh",
+    src: "etc/init.qcom.coex.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qcom.debug-sdm660.sh",
+    src: "etc/init.qcom.debug-sdm660.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qcom.debug-sdm710.sh",
+    src: "etc/init.qcom.debug-sdm710.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qcom.debug.sh",
+    src: "etc/init.qcom.debug.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qcom.early_boot.sh",
+    src: "etc/init.qcom.early_boot.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qcom.efs.sync.sh",
+    src: "etc/init.qcom.efs.sync.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qcom.post_boot.sh",
+    src: "etc/init.qcom.post_boot.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qcom.sdio.sh",
+    src: "etc/init.qcom.sdio.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qcom.sh",
+    src: "etc/init.qcom.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qcom.ssr.sh",
+    src: "etc/init.qcom.ssr.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qcom.testscripts.sh",
+    src: "etc/init.qcom.testscripts.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qti.can.sh",
+    src: "etc/init.qti.can.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qti.dcvs.sh",
+    src: "etc/init.qti.dcvs.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qti.debug-atoll.sh",
+    src: "etc/init.qti.debug-atoll.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qti.debug-bengal.sh",
+    src: "etc/init.qti.debug-bengal.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qti.debug-khaje.sh",
+    src: "etc/init.qti.debug-khaje.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qti.debug-kona.sh",
+    src: "etc/init.qti.debug-kona.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qti.debug-lagoon.sh",
+    src: "etc/init.qti.debug-lagoon.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qti.debug-lito.sh",
+    src: "etc/init.qti.debug-lito.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qti.debug-msmnile-apps.sh",
+    src: "etc/init.qti.debug-msmnile-apps.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qti.debug-msmnile-modem.sh",
+    src: "etc/init.qti.debug-msmnile-modem.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qti.debug-msmnile.sh",
+    src: "etc/init.qti.debug-msmnile.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qti.debug-msmnile-slpi.sh",
+    src: "etc/init.qti.debug-msmnile-slpi.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qti.debug-talos.sh",
+    src: "etc/init.qti.debug-talos.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qti.debug-trinket.sh",
+    src: "etc/init.qti.debug-trinket.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.qti.early_init.sh",
+    src: "etc/init.qti.early_init.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "init.veth_ipa_config.sh",
+    src: "etc/init.veth_ipa_config.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "qca6234-service.sh",
+    src: "etc/qca6234-service.sh",
+    vendor: true,
+}
+
+sh_binary {
+    name: "sku-info.sh",
+    src: "etc/sku-info.sh",
+    vendor: true,
+}
+
