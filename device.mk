@@ -541,12 +541,22 @@ PRODUCT_PACKAGES += \
 MSM_VIDC_TARGET_LIST := lito
 MASTER_SIDE_CP_TARGET_LIST := lito
 
+# Enable CLANG/LLVM integer-overflow sanitization
+TARGET_ENABLE_VIDC_INTSAN := true
+
+# Enable DIAG mode for CLANG/LLVM integer-overflow sanitization
+# TARGET_ENABLE_VIDC_INTSAN must be set to 'true' before enabling DIAG mode
+# NOTE: DIAG mode should be used only for debug builds
+TARGET_ENABLE_VIDC_INTSAN_DIAG := false
+
 PRODUCT_PACKAGES += \
+    init.qti.media.sh \
     libavservices_minijail \
     libavservices_minijail.vendor \
     libcodec2_hidl@1.0.vendor \
     libcodec2_vndk.vendor \
     libc2dcolorconvert \
+    libOmxG711Enc \
     libOmxAacEnc \
     libOmxAmrEnc \
     libOmxCore \
@@ -554,10 +564,55 @@ PRODUCT_PACKAGES += \
     libOmxQcelp13Enc \
     libOmxVdec \
     libOmxVenc \
+    libmediaplayerservice \
     libmm-omxcore \
     libnbaio \
     libstagefrighthw \
+    libstagefright_httplive \
     libstagefright_softomx.vendor
+
+ifneq ($(QCPATH),)
+PRODUCT_PACKAGES += \
+    libOmxSwVdec \
+    libOmxSwVencMpeg4
+endif
+
+#Vendor property to enable Codec2 for audio and OMX for Video
+PRODUCT_PROPERTY_OVERRIDES += debug.stagefright.ccodec=1
+
+PRODUCT_COPY_FILES += \
+    $(FP_PATH)/media/media_codecs.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs.xml \
+    $(FP_PATH)/media/media_codecs_performance.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_performance.xml \
+    $(FP_PATH)/media/media_codecs_performance_lagoon_v0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_performance_v2.xml \
+    $(FP_PATH)/media/media_codecs_performance_lagoon_v1.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_performance_v3.xml \
+    $(FP_PATH)/media/media_codecs_performance_v1.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_performance_v1.xml \
+    $(FP_PATH)/media/media_codecs_vendor.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_vendor.xml \
+    $(FP_PATH)/media/media_codecs_vendor_audio.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_vendor_audio.xml \
+    $(FP_PATH)/media/media_codecs_vendor_lagoon_v0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_vendor_v2.xml \
+    $(FP_PATH)/media/media_codecs_vendor_lagoon_v1.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_vendor_v3.xml \
+    $(FP_PATH)/media/media_codecs_vendor_v1.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_vendor_v1.xml \
+    $(FP_PATH)/media/media_profiles.xml:$(TARGET_COPY_OUT_ODM)/etc/media_profiles_V1_0.xml \
+    $(FP_PATH)/media/media_profiles.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_profiles.xml \
+    $(FP_PATH)/media/media_profiles_vendor.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_profiles_vendor.xml \
+    $(FP_PATH)/media/mediacodec-seccomp.policy:$(TARGET_COPY_OUT_VENDOR)/etc/seccomp_policy/mediacodec.policy \
+    $(FP_PATH)/media/system_properties.xml:$(TARGET_COPY_OUT_VENDOR)/etc/system_properties.xml
+
+PRODUCT_COPY_FILES += \
+    frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_google_audio.xml \
+    frameworks/av/media/libstagefright/data/media_codecs_google_c2.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_google_c2.xml \
+    frameworks/av/media/libstagefright/data/media_codecs_google_c2_audio.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_google_c2_audio.xml \
+    frameworks/av/media/libstagefright/data/media_codecs_google_c2_video.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_google_c2_video.xml \
+    frameworks/av/media/libstagefright/data/media_codecs_google_telephony.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_google_telephony.xml \
+    frameworks/av/media/libstagefright/data/media_codecs_google_video.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_google_video.xml \
+    frameworks/av/media/libstagefright/data/media_codecs_google_video_le.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_google_video_le.xml
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    debug.stagefright.omx_default_rank=0 \
+    media.settings.xml=/vendor/etc/media_profiles_vendor.xml
+
+PRODUCT_PACKAGES += \
+    libcodec2_vndk.vendor \
+    libcodec2_hidl@1.0.vendor
 
 
 # Metadata encryption
