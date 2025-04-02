@@ -54,5 +54,50 @@ PRODUCT_AAPT_CONFIG := normal
 PRODUCT_AAPT_PREF_CONFIG := xxhdpi
 
 
+# Init
+PRODUCT_PACKAGES += \
+    init.crda.sh \
+    init.environ.rc \
+    init.qti.dcvs.sh \
+    init.target.rc \
+    init.qcom.coex.sh \
+    init.qcom.early_boot.sh \
+    init.qcom.post_boot.sh \
+    init.qcom.rc \
+    init.recovery.qcom.rc \
+    init.qcom.factory.rc \
+    init.qcom.sdio.sh \
+    init.qcom.sh \
+    init.qcom.class_core.sh \
+    init.class_main.sh \
+    init.qcom.usb.rc \
+    init.qcom.usb.sh \
+    init.qcom.efs.sync.sh \
+    init.qti.early_init.sh \
+    init.qti.ufs.rc \
+    ueventd.qcom.rc \
+    qca6234-service.sh \
+    init.mdm.sh \
+    fstab.default
+
+PRODUCT_PACKAGES_DEBUG += \
+    init.qcom.debug.sh \
+    init.qcom.debug-sdm660.sh \
+    init.qcom.debug-sdm710.sh \
+    init.qcom.test.rc \
+    init.qti.debug-msmnile-apps.sh \
+    init.qti.debug-msmnile-modem.sh \
+    init.qti.debug-msmnile-slpi.sh \
+    init.qti.debug-talos.sh \
+    init.qti.debug-msmnile.sh \
+    init.qti.debug-kona.sh \
+    init.qti.debug-lito.sh \
+    init.qti.debug-atoll.sh \
+    init.qti.debug-trinket.sh \
+    init.qti.debug-bengal.sh \
+    init.qti.debug-khaje.sh \
+    init.qti.usb.debug.sh
+
+
 # include additional QCOM build utilities
 include $(FP_PATH)/utils.mk
