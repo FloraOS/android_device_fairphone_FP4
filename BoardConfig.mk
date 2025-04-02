@@ -65,6 +65,47 @@ DEVICE_MANIFEST_FILE := $(FP_PATH)/manifest.xml
 DEVICE_MATRIX_FILE   := $(FP_PATH)/compatibility_matrix.xml
 
 
+# Kernel
+BOARD_KERNEL_BASE        := 0x00000000
+BOARD_KERNEL_PAGESIZE    := 4096
+BOARD_KERNEL_SEPARATED_DTBO := true
+BOARD_KERNEL_TAGS_OFFSET := 0x01E00000
+BOARD_RAMDISK_OFFSET     := 0x02000000
+KERNEL_TO_BUILD_ROOT_OFFSET := ../../
+TARGET_COMPILE_WITH_MSM_KERNEL := true
+TARGET_KERNEL_VERSION ?= 4.19
+TARGET_KERNEL_SOURCE ?= kernel/msm-$(TARGET_KERNEL_VERSION)
+# Disable appended dtb.
+TARGET_KERNEL_APPEND_DTB := false
+TARGET_KERNEL_ARCH := arm64
+TARGET_KERNEL_CROSS_COMPILE_PREFIX := $(shell pwd)/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-
+TARGET_KERNEL_HEADER_ARCH := arm64
+TARGET_NO_KERNEL := false
+TARGET_USES_UNCOMPRESSED_KERNEL := false
+
+BOARD_KERNEL_CMDLINE := androidboot.console=ttyMSM0
+BOARD_KERNEL_CMDLINE += androidboot.hardware=qcom
+BOARD_KERNEL_CMDLINE += androidboot.memcg=1
+BOARD_KERNEL_CMDLINE += androidboot.usbcontroller=a600000.dwc3
+BOARD_KERNEL_CMDLINE += cgroup.memory=nokmem,nosocket
+BOARD_KERNEL_CMDLINE += earlycon=msm_geni_serial,0x888000
+BOARD_KERNEL_CMDLINE += loop.max_part=7
+BOARD_KERNEL_CMDLINE += lpm_levels.sleep_disabled=1
+BOARD_KERNEL_CMDLINE += msm_rtb.filter=0x237
+BOARD_KERNEL_CMDLINE += service_locator.enable=1
+BOARD_KERNEL_CMDLINE += swiotlb=2048
+BOARD_KERNEL_CMDLINE += video=vfb:640x400,bpp=32,memsize=3072000
+ifneq (,$(filter eng,$(TARGET_BUILD_VARIANT)))
+BOARD_KERNEL_CMDLINE += console=ttyMSM0,115200,n8
+BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
+endif
+
+#Enable dtb in boot image and boot image header version 2 support.
+BOARD_INCLUDE_DTB_IN_BOOTIMG := true
+BOARD_BOOTIMG_HEADER_VERSION := 2
+BOARD_MKBOOTIMG_ARGS := --header_version $(BOARD_BOOTIMG_HEADER_VERSION)
+
+
 # Metadata partition
 # Define BOARD_USES_METADATA_PARTITION to create metadata mount point in system image
 BOARD_USES_METADATA_PARTITION := true

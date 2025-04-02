@@ -103,5 +103,10 @@ PRODUCT_PACKAGES_DEBUG += \
     init.qti.usb.debug.sh
 
 
+# Kernel modules install path
+KERNEL_MODULES_INSTALL := dlkm
+KERNEL_MODULES_OUT := out/target/product/FP4/$(KERNEL_MODULES_INSTALL)/lib/modules
+
+
 # include additional QCOM build utilities
 include $(FP_PATH)/utils.mk
