@@ -64,6 +64,122 @@ PRODUCT_PACKAGES += \
 
 
 # Audio
+AUDIO_FEATURE_ENABLED_DLKM := true
+TARGET_USES_AOSP_FOR_AUDIO := false
+
+AUDIO_HAL_PATH := hardware/qcom/audio
+
+PRODUCT_PACKAGES += \
+    android.hardware.audio.common@6.0 \
+    android.hardware.audio.common@6.0-util \
+    android.hardware.audio.effect@2.0-impl \
+    android.hardware.audio.effect@6.0 \
+    android.hardware.audio.effect@6.0-impl \
+    android.hardware.audio@2.0-impl \
+    android.hardware.audio@2.0-service \
+    android.hardware.audio@6.0 \
+    android.hardware.audio@6.0-impl \
+    android.hardware.soundtrigger@2.3-impl \
+    audio.primary.lito \
+    audio.r_submix.default \
+    audio.usb.default \
+    sound_trigger.primary.lito
+
+PRODUCT_PACKAGES += \
+    libaudio-resampler \
+    libaudiohal@6.0 \
+    liba2dpoffload \
+    libbatterylistener \
+    libcirrusspkrprot \
+    libcomprcapture \
+    libexthwplugin \
+    libhdmiedid \
+    libhdmipassthru \
+    libhfp \
+    libsndmonitor \
+    libspkrprot \
+    libqcompostprocbundle \
+    libqcomvisualizer \
+    libqcomvoiceprocessing \
+    libssrec \
+    libvolumelistener
+
+#Audio DLKM
+AUDIO_DLKM := audio_adsp_loader.ko
+AUDIO_DLKM += audio_bolero_cdc.ko
+AUDIO_DLKM += audio_hdmi.ko
+AUDIO_DLKM += audio_machine_lito.ko
+AUDIO_DLKM += audio_mbhc.ko
+AUDIO_DLKM += audio_native.ko
+AUDIO_DLKM += audio_pinctrl_lpi.ko
+AUDIO_DLKM += audio_platform.ko
+AUDIO_DLKM += audio_q6.ko
+AUDIO_DLKM += audio_q6_notifier.ko
+AUDIO_DLKM += audio_q6_pdr.ko
+AUDIO_DLKM += audio_rx_macro.ko
+AUDIO_DLKM += audio_snd_event.ko
+AUDIO_DLKM += audio_stub.ko
+AUDIO_DLKM += audio_swr.ko
+AUDIO_DLKM += audio_swr_ctrl.ko
+AUDIO_DLKM += audio_tx_macro.ko
+AUDIO_DLKM += audio_usf.ko
+AUDIO_DLKM += audio_va_macro.ko
+AUDIO_DLKM += audio_wcd937x.ko
+AUDIO_DLKM += audio_wcd937x_slave.ko
+AUDIO_DLKM += audio_wcd938x.ko
+AUDIO_DLKM += audio_wcd938x_slave.ko
+AUDIO_DLKM += audio_wcd9xxx.ko
+AUDIO_DLKM += audio_wcd_core.ko
+AUDIO_DLKM += audio_wsa881x.ko
+AUDIO_DLKM += audio_wsa883x.ko
+AUDIO_DLKM += audio_wsa_macro.ko
+AUDIO_DLKM += audio_apr.ko
+
+PRODUCT_PACKAGES += $(AUDIO_DLKM)
+
+PRODUCT_COPY_FILES += \
+    $(AUDIO_HAL_PATH)/configs/lito/audio_effects.conf:$(TARGET_COPY_OUT_VENDOR)/etc/audio_effects.conf \
+    $(AUDIO_HAL_PATH)/configs/lito/audio_effects.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_effects.xml \
+    $(AUDIO_HAL_PATH)/configs/lito/audio_io_policy.conf:$(TARGET_COPY_OUT_VENDOR)/etc/audio_io_policy.conf \
+    $(AUDIO_HAL_PATH)/configs/lito/audio_platform_info.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_platform_info.xml \
+    $(AUDIO_HAL_PATH)/configs/lito/audio_platform_info_intcodec.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_platform_info_intcodec.xml \
+    $(AUDIO_HAL_PATH)/configs/lito/audio_platform_info_lagoon_qrd.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_platform_info_lagoon_qrd.xml \
+    $(AUDIO_HAL_PATH)/configs/lito/audio_platform_info_qrd.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_platform_info_qrd.xml \
+    $(AUDIO_HAL_PATH)/configs/lito/mixer_paths.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths.xml \
+    $(AUDIO_HAL_PATH)/configs/lito/mixer_paths_cdp.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths_cdp.xml \
+    $(AUDIO_HAL_PATH)/configs/lito/mixer_paths_lagoonmtp.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths_lagoonmtp.xml \
+    $(AUDIO_HAL_PATH)/configs/lito/mixer_paths_lagoonqrd.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths_lagoonqrd.xml \
+    $(AUDIO_HAL_PATH)/configs/lito/mixer_paths_orchidmtp.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths_orchidmtp.xml \
+    $(AUDIO_HAL_PATH)/configs/lito/mixer_paths_qrd.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths_qrd.xml \
+    $(AUDIO_HAL_PATH)/configs/lito/sound_trigger_mixer_paths.xml:$(TARGET_COPY_OUT_VENDOR)/etc/sound_trigger_mixer_paths.xml \
+    $(AUDIO_HAL_PATH)/configs/lito/sound_trigger_mixer_paths_cdp.xml:$(TARGET_COPY_OUT_VENDOR)/etc/sound_trigger_mixer_paths_cdp.xml \
+    $(AUDIO_HAL_PATH)/configs/lito/sound_trigger_mixer_paths_lagoonmtp.xml:$(TARGET_COPY_OUT_VENDOR)/etc/sound_trigger_mixer_paths_lagoonmtp.xml \
+    $(AUDIO_HAL_PATH)/configs/lito/sound_trigger_mixer_paths_lagoonqrd.xml:$(TARGET_COPY_OUT_VENDOR)/etc/sound_trigger_mixer_paths_lagoonqrd.xml \
+    $(AUDIO_HAL_PATH)/configs/lito/sound_trigger_mixer_paths_orchidmtp.xml:$(TARGET_COPY_OUT_VENDOR)/etc/sound_trigger_mixer_paths_orchidmtp.xml \
+    $(AUDIO_HAL_PATH)/configs/lito/sound_trigger_mixer_paths_qrd.xml:$(TARGET_COPY_OUT_VENDOR)/etc/sound_trigger_mixer_paths_qrd.xml \
+    $(AUDIO_HAL_PATH)/configs/lito/sound_trigger_platform_info.xml:$(TARGET_COPY_OUT_VENDOR)/etc/sound_trigger_platform_info.xml
+
+# Custom audio configs
+PRODUCT_COPY_FILES += \
+    $(FP_PATH)/audio/audio_platform_info_lagoon_fp4.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_platform_info_lagoon_fp4.xml \
+    $(FP_PATH)/audio/audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration.xml \
+    $(FP_PATH)/audio/bluetooth_hearing_aid_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/bluetooth_hearing_aid_audio_policy_configuration.xml \
+    $(FP_PATH)/audio/mixer_paths_lagoon_fp4.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths_lagoon_fp4.xml
+
+PRODUCT_COPY_FILES += \
+    frameworks/av/services/audiopolicy/config/a2dp_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/a2dp_audio_policy_configuration.xml \
+    frameworks/av/services/audiopolicy/config/audio_policy_volumes.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_volumes.xml \
+    frameworks/av/services/audiopolicy/config/default_volume_tables.xml:$(TARGET_COPY_OUT_VENDOR)/etc/default_volume_tables.xml \
+    frameworks/av/services/audiopolicy/config/r_submix_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/r_submix_audio_policy_configuration.xml \
+    frameworks/av/services/audiopolicy/config/usb_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/usb_audio_policy_configuration.xml \
+    $(AUDIO_HAL_PATH)/configs/common/bluetooth_qti_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/bluetooth_qti_audio_policy_configuration.xml
+
+# Audio Permissions
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.hardware.audio.low_latency.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.audio.low_latency.xml \
+    frameworks/native/data/etc/android.hardware.audio.pro.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.audio.pro.xml
+
+include $(FP_PATH)/audio_properties.mk
 
 
 # Bluetooth

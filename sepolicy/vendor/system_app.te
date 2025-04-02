@@ -1,3 +1,6 @@
 # Settings app is a system_app, allow calls to iris hwservice
-
 hal_client_domain(system_app, hal_display_iris)
+
+allow system_app vendor_audio_device:dir search;
+allow system_app vendor_audio_device:file rw_file_perms;
+allow system_app vendor_audio_device:chr_file rw_file_perms;

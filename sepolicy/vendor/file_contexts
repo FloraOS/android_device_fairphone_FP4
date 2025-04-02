@@ -5,3 +5,6 @@
 /vendor/bin/irisdbgd                                                                        u:object_r:irisdbgd_exec:s0
 /vendor/bin/irisdbgc                                                                        u:object_r:irisdbgc_exec:s0
 /dev/i2c-[0-9]+                                                                             u:object_r:iris_i2c_device:s0
+
+/dev/aw882xx_smartpa_l                                                                      u:object_r:vendor_audio_device:s0
+/dev/aw882xx_smartpa_r                                                                      u:object_r:vendor_audio_device:s0
