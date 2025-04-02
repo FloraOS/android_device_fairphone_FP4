@@ -264,6 +264,10 @@ BOARD_RECOVERYIMAGE_PARTITION_SIZE := 0x06000000
 TARGET_RECOVERY_FSTAB := $(FP_PATH)/rootdir/etc/recovery_AB_variant.fstab
 
 
+# Sensors
+USE_SENSOR_MULTI_HAL := true
+
+
 # SEPolicy
 include device/qcom/sepolicy_vndr/SEPolicy.mk
 BOARD_SEPOLICY_DIRS += \
