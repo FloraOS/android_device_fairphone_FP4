@@ -27,6 +27,18 @@ PRODUCT_MANUFACTURER := Fairphone
 TARGET_BOARD_PLATFORM := lito
 
 
+# Build only specific images
+PRODUCT_BUILD_BOOT_IMAGE := true
+PRODUCT_BUILD_ODM_IMAGE := true
+PRODUCT_BUILD_PRODUCT_IMAGE := false
+PRODUCT_BUILD_RAMDISK_IMAGE := true
+PRODUCT_BUILD_RECOVERY_IMAGE := true
+PRODUCT_BUILD_SYSTEM_EXT_IMAGE := false
+PRODUCT_BUILD_SYSTEM_IMAGE := false
+PRODUCT_BUILD_USERDATA_IMAGE := false
+PRODUCT_BUILD_VENDOR_IMAGE := true
+
+
 # AB configurations
 ENABLE_AB := true # Enable AB partitions by default
 ENABLE_VIRTUAL_AB := true # Enable virtual AB configs by default
