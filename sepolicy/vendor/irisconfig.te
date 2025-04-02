@@ -1,0 +1,16 @@
+# policy for irisConfig utility
+
+type iris_config, domain;
+type iris_config_exec, exec_type, vendor_file_type, file_type;
+domain_auto_trans(shell, iris_config_exec, iris_config)
+
+hal_client_domain(iris_config, hal_display_iris)
+allow iris_config hal_display_iris_hwservice:hwservice_manager find;
+
+allow iris_config adbd:process sigchld;
+allow iris_config shell:fd use;
+allow iris_config adbd:fd use;
+allow iris_config devpts:chr_file { read write ioctl getattr };
+allow iris_config adbd:unix_stream_socket { read write getattr };
+
+allow hal_graphics_composer_default vendor_persist_file:file { read write open };

@@ -1,0 +1,18 @@
+### Iris debug client
+
+type irisdbgc, domain;
+type irisdbgc_exec, exec_type, vendor_file_type, file_type;
+domain_auto_trans(shell, irisdbgc_exec, irisdbgc)
+
+# allow output to stdout/stderr
+allow irisdbgc devpts:chr_file rw_file_perms;
+allow irisdbgc tty_device:chr_file rw_file_perms;
+allow irisdbgc console_device:chr_file rw_file_perms;
+allow irisdbgc adbd:unix_stream_socket { read write };
+
+allow irisdbgc adbd:process sigchld;
+allow irisdbgc shell:fd use;
+allow irisdbgc adbd:fd use;
+
+# Create and use network sockets.
+net_domain(irisdbgc)

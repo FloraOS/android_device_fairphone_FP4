@@ -1,0 +1,2 @@
+# allow system server to find display iris service.
+allow system_server hal_display_iris_hwservice:hwservice_manager find;

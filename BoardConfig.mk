@@ -23,13 +23,16 @@ TARGET_2ND_CPU_VARIANT := cortex-a9
 # A/B partition configs
 AB_OTA_UPDATER := true
 
-# A/B partition configs
 AB_OTA_PARTITIONS += \
     boot \
     dtbo \
     odm \
     recovery \
     vendor
+
+
+# Adreno
+BOARD_USES_ADRENO := true
 
 
 # Enable AVB 2.0
@@ -65,6 +68,30 @@ TARGET_USERIMAGES_USE_F2FS := true
 BOARD_FLASH_BLOCK_SIZE := 131072 # (BOARD_KERNEL_PAGESIZE * 64)
 
 TARGET_FS_CONFIG_GEN := $(FP_PATH)/configs/config.fs
+
+
+# Graphics
+MAX_EGL_CACHE_KEY_SIZE := 12*1024
+MAX_EGL_CACHE_SIZE := 2048*1024
+MAX_VIRTUAL_DISPLAY_DIMENSION := 4096
+NUM_FRAMEBUFFER_SURFACE_BUFFERS := 3
+SF_WCG_COMPOSITION_DATA_SPACE := 143261696
+TARGET_FORCE_HWC_FOR_VIRTUAL_DISPLAYS := true
+TARGET_HAS_HDR_DISPLAY := true
+TARGET_HAS_WIDE_COLOR_DISPLAY := true
+TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
+TARGET_USES_COLOR_METADATA := true
+TARGET_USES_DISPLAY_RENDER_INTENTS := true
+TARGET_USES_DRM_PP := true
+TARGET_USES_GRALLOC1 := true
+TARGET_USES_GRALLOC4 := true
+TARGET_USES_HWC2 := true
+TARGET_USES_ION := true
+TARGET_USES_NEW_ION_API := true
+TARGET_USES_QCOM_DISPLAY_BSP := true
+TARGET_USES_QTI_MAPPER_2_0 := true
+TARGET_USES_QTI_MAPPER_EXTENSIONS_1_1 := true
+TARGET_USE_COLOR_MANAGEMENT := true
 
 
 # HIDL
@@ -114,6 +141,25 @@ BOARD_BOOTIMG_HEADER_VERSION := 2
 BOARD_MKBOOTIMG_ARGS := --header_version $(BOARD_BOOTIMG_HEADER_VERSION)
 
 
+# Kernel modules
+BOARD_VENDOR_KERNEL_MODULES := \
+    $(KERNEL_MODULES_OUT)/lcd.ko \
+    $(KERNEL_MODULES_OUT)/llcc_perfmon.ko \
+    $(KERNEL_MODULES_OUT)/mpq-adapter.ko \
+    $(KERNEL_MODULES_OUT)/mpq-dmx-hw-plugin.ko
+
+ifneq (,$(filter userdebug eng, $(TARGET_BUILD_VARIANT)))
+    ifeq (,$(findstring perf_defconfig, $(KERNEL_DEFCONFIG)))
+        BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/atomic64_test.ko
+        BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/lkdtm.ko
+        BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/locktorture.ko
+        BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/rcutorture.ko
+        BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/test_user_copy.ko
+        BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/torture.ko
+    endif
+endif
+
+
 # Metadata partition
 # Define BOARD_USES_METADATA_PARTITION to create metadata mount point in system image
 BOARD_USES_METADATA_PARTITION := true
@@ -125,11 +171,16 @@ TARGET_COPY_OUT_ODM := odm
 
 
 # Others
+BOARD_DO_NOT_STRIP_VENDOR_MODULES := true
 BOARD_USES_GENERIC_AUDIO := true
 
 
 # Persist partition
 BOARD_PERSISTIMAGE_FILE_SYSTEM_TYPE := ext4
+
+
+# Power
+TARGET_USES_INTERACTION_BOOST := true
 
 
 # Recovery
@@ -142,7 +193,7 @@ TARGET_RECOVERY_FSTAB := $(FP_PATH)/rootdir/etc/recovery_AB_variant.fstab
 # SEPolicy
 include device/qcom/sepolicy_vndr/SEPolicy.mk
 BOARD_SEPOLICY_DIRS += \
-    $(FP_PATH)/sepolicy
+    $(FP_PATH)/sepolicy/vendor
 
 
 # Super partition
@@ -150,10 +201,15 @@ BOARD_QTI_DYNAMIC_PARTITIONS_SIZE := 6438256640
 BOARD_SUPER_PARTITION_GROUPS := qti_dynamic_partitions
 BOARD_SUPER_PARTITION_SIZE := 6442450944
 
- Super partition
 BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := \
     odm \
     vendor
+
+
+# Treble
+BOARD_SYSTEMSDK_VERSIONS := $(SHIPPING_API_LEVEL)
+PRODUCT_FULL_TREBLE_OVERRIDE := true
+
 
 # Userdata partition
 BOARD_USERDATAIMAGE_FILE_SYSTEM_TYPE := f2fs
@@ -164,3 +220,12 @@ BOARD_USERDATAIMAGE_PARTITION_SIZE := 26843545600
 ENABLE_VENDOR_IMAGE := true
 BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
 TARGET_COPY_OUT_VENDOR := vendor
+
+
+# VNDK
+BOARD_PROPERTY_OVERRIDES_SPLIT_ENABLED := true
+BOARD_VNDK_VERSION := current
+
+
+# Vendor-specific definitions
+-include vendor/fairphone/fp4/BoardConfigVendor.mk

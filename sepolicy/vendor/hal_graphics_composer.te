@@ -1,0 +1,18 @@
+# allow client to find display iris service.
+allow hal_display_iris_client hal_display_iris_hwservice:hwservice_manager find;
+
+# allow server to register display iris service
+add_hwservice(hal_display_iris_server, hal_display_iris_hwservice);
+
+# allow hwc to host hal_display_iris_server
+typeattribute hal_graphics_composer_default hal_display_iris_server;
+
+# Allow hwbinder call from hal client to server
+binder_call(hal_display_iris_client, hal_display_iris_server)
+
+# Allow hwbinder call from hal server to client
+binder_call(hal_display_iris_server, hal_display_iris_client)
+
+allow hal_graphics_composer_default sysfs_devices_system_cpu:file rw_file_perms;
+
+hal_client_domain(hal_graphics_composer_default, hal_display_iris)

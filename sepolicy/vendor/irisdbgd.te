@@ -1,0 +1,13 @@
+### Iris debug daemon
+
+type irisdbgd, domain;
+type irisdbgd_exec, exec_type, vendor_file_type, file_type;
+type iris_i2c_device, dev_type;
+
+init_daemon_domain(irisdbgd)
+
+# Create and use network sockets.
+net_domain(irisdbgd)
+
+# access /dev/i2c-N
+allow irisdbgd iris_i2c_device:chr_file rw_file_perms;

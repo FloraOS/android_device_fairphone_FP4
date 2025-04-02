@@ -4,6 +4,9 @@
 FP_PATH := device/fairphone/FP4
 
 
+# Call the vendor setup
+$(call inherit-product-if-exists, vendor/fairphone/fp4/device-vendor.mk)
+
 # Inherit Virtual AB configs
 $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
 
@@ -43,15 +46,196 @@ PRODUCT_BUILD_VENDOR_IMAGE := true
 ENABLE_AB := true # Enable AB partitions by default
 ENABLE_VIRTUAL_AB := true # Enable virtual AB configs by default
 
+AB_OTA_POSTINSTALL_CONFIG += \
+    RUN_POSTINSTALL_vendor=true \
+    POSTINSTALL_PATH_vendor=bin/checkpoint_gc \
+    FILESYSTEM_TYPE_vendor=ext4 \
+    POSTINSTALL_OPTIONAL_vendor=true
+
+
+# Dynamic partition
+BOARD_DYNAMIC_PARTITION_ENABLE := true # Enable dynamic partitions by default
+PRODUCT_USE_DYNAMIC_PARTITIONS := true
+
+
+# Atrace
+PRODUCT_PACKAGES += \
+    android.hardware.atrace@1.0-service
+
+
+# Audio
+
+
+# Bluetooth
+
 
 # Board platforms lists to be used for
 # TARGET_BOARD_PLATFORM specific featurization
 QCOM_BOARD_PLATFORMS += lito
 
 
+# Boot
+PRODUCT_PACKAGES += \
+    android.hardware.boot@1.1-impl-qti \
+    android.hardware.boot@1.1-impl-qti.recovery \
+    android.hardware.boot@1.1-service \
+    bootctrl.lito \
+    libminui
+
+
+# Skip boot jars check
+SKIP_BOOT_JARS_CHECK := true
+
+
+# Camera
+
+
+# Dalvik/Heap
+PRODUCT_PROPERTY_OVERRIDES  += \
+    dalvik.vm.heapgrowthlimit=256m \
+    dalvik.vm.heapmaxfree=8m \
+    dalvik.vm.heapminfree=512k \
+    dalvik.vm.heapsize=512m \
+    dalvik.vm.heapstartsize=8m \
+    dalvik.vm.heaptargetutilization=0.75
+
+
+# Display
+PRODUCT_PACKAGES += \
+    android.hardware.graphics.mapper@3.0-impl-qti-display \
+    android.hardware.graphics.mapper@4.0-impl-qti-display \
+    android.hardware.memtrack@1.0-impl \
+    android.hardware.memtrack@1.0-service \
+    gralloc.default \
+    gralloc.lito \
+    libdisplayconfig.qti \
+    libdisplayconfig.qti.vendor \
+    libdrm \
+    libgralloc.qti \
+    libgui_vendor \
+    libqdMetaData \
+    libqdutils \
+    libsdmcore \
+    libsdmutils \
+    lights.lito \
+    memtrack.lito \
+    modetest \
+    vendor.display.config@1.14 \
+    vendor.qti.hardware.display.allocator-service \
+    vendor.qti.hardware.display.composer-service
+
+# From hardware/qcom/display/config/display-product.mk
+include $(FP_PATH)/display-product.mk
+
+# Pixelworks
+PXLW_IRIS_SERVICE_PASSTHROUGH := 1
+IRIS_BSP_PLATFORM := QCOM_DRM
+IRIS_CFLAGS := -DPXLW_IRIS
+
+PRODUCT_PACKAGES += \
+    irisConfig \
+    irisdbgc \
+    irisdbgd \
+    libpwirisIoctlWrapper \
+    libpwirisfeature \
+    libpwirishalwrapper \
+    libpwirisservice \
+    vendor.pixelworks.hardware.display.iris-service \
+    vendor.pixelworks.hardware.feature.irisfeature-service
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.sys.sf.color_mode=0
+
+
 # Display Properties
 PRODUCT_AAPT_CONFIG := normal
 PRODUCT_AAPT_PREF_CONFIG := xxhdpi
+
+
+# DPM
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.vendor.dpmhalservice.enable=1
+
+
+# DRM
+PRODUCT_PACKAGES += \
+    android.hardware.drm@1.3-service.clearkey
+
+
+# Encryption
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.crypto.volume.filenames_mode = "aes-256-cts"
+
+
+# Fastbootd
+PRODUCT_PACKAGES += fastbootd
+# Add default implementation of fastboot HAL.
+PRODUCT_PACKAGES += android.hardware.fastboot@1.0-impl-mock
+
+
+# Feature flags and Permissions
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.hardware.opengles.aep.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.opengles.aep.xml \
+    frameworks/native/data/etc/android.hardware.touchscreen.multitouch.jazzhand.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.touchscreen.multitouch.jazzhand.xml \
+    frameworks/native/data/etc/android.hardware.usb.accessory.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.usb.accessory.xml \
+    frameworks/native/data/etc/android.hardware.usb.host.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.usb.host.xml \
+    frameworks/native/data/etc/android.hardware.vulkan.compute-0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.vulkan.compute-0.xml \
+    frameworks/native/data/etc/android.hardware.vulkan.level-1.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.vulkan.level-1.xml \
+    frameworks/native/data/etc/android.hardware.vulkan.version-1_1.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.vulkan.version-1_1.xml \
+    frameworks/native/data/etc/android.software.device_id_attestation.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.device_id_attestation.xml \
+    frameworks/native/data/etc/android.software.ipsec_tunnels.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.ipsec_tunnels.xml \
+    frameworks/native/data/etc/android.software.midi.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.midi.xml \
+    frameworks/native/data/etc/android.software.sip.voip.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.sip.voip.xml \
+    frameworks/native/data/etc/android.software.verified_boot.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.verified_boot.xml \
+    frameworks/native/data/etc/android.software.vulkan.deqp.level-2020-03-01.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.vulkan.deqp.level.xml
+
+
+# framework detect libs
+PRODUCT_PACKAGES += \
+    libqti_vndfwk_detect.vendor \
+    libvndfwk_detect_jni.qti.vendor \
+    vndservicemanager
+
+
+# FRP
+PRODUCT_PROPERTY_OVERRIDES += ro.frp.pst=/dev/block/bootdevice/by-name/frp
+
+
+# fs Config
+PRODUCT_PACKAGES += fs_config_files
+
+
+# Fstman
+PRODUCT_PACKAGES += \
+    vendor.qti.hardware.fstman@1.0.vendor
+
+
+# GPS
+
+
+# Graphics
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.hardware.vulkan=adreno \
+    ro.hardware.egl=adreno \
+    ro.gfx.driver.1=com.qualcomm.qti.gpudrivers.lito.api30
+
+
+# GZip
+PRODUCT_HOST_PACKAGES += \
+    minigzip
+
+
+# Healthd packages
+PRODUCT_PACKAGES += \
+    android.hardware.health@2.1-impl-qti \
+    android.hardware.health@2.1-service \
+    libhealthd.msm
+
+
+# HIDL
+PRODUCT_PACKAGES += \
+    libhidltransport.vendor \
+    libhwbinder.vendor
 
 
 # Init
@@ -103,10 +287,230 @@ PRODUCT_PACKAGES_DEBUG += \
     init.qti.usb.debug.sh
 
 
+# IPACM
+PRODUCT_PACKAGES += \
+    ipacm \
+    IPACM_cfg.xml \
+    libipanat \
+    liboffloadhal \
+    libqsap_sdk
+
+
+# Json
+PRODUCT_PACKAGES += \
+    libjson
+
+
 # Kernel modules install path
 KERNEL_MODULES_INSTALL := dlkm
 KERNEL_MODULES_OUT := out/target/product/FP4/$(KERNEL_MODULES_INSTALL)/lib/modules
 
 
+# Libion
+PRODUCT_PACKAGES += \
+    libion
+
+
+# Librmnetctrl
+PRODUCT_PACKAGES += \
+    librmnetctl
+
+
+# Libpsi
+PRODUCT_PACKAGES += \
+    libpsi.vendor
+
+
+# Libxml2
+PRODUCT_PACKAGES += \
+    libxml2.vendor
+
+
+# Lights
+PRODUCT_PACKAGES += \
+    android.hardware.lights-service.qti
+
+
+# Logwrapper
+PRODUCT_PACKAGES += \
+    liblogwrap
+
+
+# Media
+MSM_VIDC_TARGET_LIST := lito
+MASTER_SIDE_CP_TARGET_LIST := lito
+
+PRODUCT_PACKAGES += \
+    libavservices_minijail \
+    libavservices_minijail.vendor \
+    libcodec2_hidl@1.0.vendor \
+    libcodec2_vndk.vendor \
+    libc2dcolorconvert \
+    libOmxAacEnc \
+    libOmxAmrEnc \
+    libOmxCore \
+    libOmxEvrcEnc \
+    libOmxQcelp13Enc \
+    libOmxVdec \
+    libOmxVenc \
+    libmm-omxcore \
+    libnbaio \
+    libstagefrighthw \
+    libstagefright_softomx.vendor
+
+
+# Metadata encryption
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.crypto.dm_default_key.options_format.version = 2 \
+    ro.crypto.volume.metadata.method=dm-default-key
+
+
+# MSM updater library
+PRODUCT_PACKAGES += \
+    librecovery_updater_msm
+
+
+# NFC
+
+
+# Oemaids
+PRODUCT_PACKAGES += \
+    liboemaids_vendor
+
+
+# OEM Unlock reporting
+PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
+    ro.oem_unlock_supported=1
+
+
+#
+# system prop for opengles version
+#
+# 196608 is decimal for 0x30000 to report version 3
+# 196609 is decimal for 0x30001 to report version 3.1
+# 196610 is decimal for 0x30002 to report version 3.2
+PRODUCT_PROPERTY_OVERRIDES  += \
+    ro.opengles.version=196610
+
+
+# Perf
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.vendor.extension_library=libqti-perfd-client.so
+
+
+# Power
+PRODUCT_PACKAGES += \
+    android.hardware.power-service
+
+PRODUCT_COPY_FILES += \
+    vendor/qcom/opensource/power/config/lito/powerhint.xml:$(TARGET_COPY_OUT_VENDOR)/etc/powerhint.xml
+
+
+# Protobuf
+PRODUCT_PACKAGES += \
+    libprotobuf-cpp-full \
+    libprotobuf-cpp-full-vendorcompat \
+    libprotobuf-cpp-lite-vendorcompat
+
+
 # include additional QCOM build utilities
 include $(FP_PATH)/utils.mk
+
+
+# QCOM Sysd
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.vendor.qcomsysd.enabled=1
+
+
+# Service tracker
+PRODUCT_PACKAGES += \
+    vendor.qti.hardware.servicetracker@1.2.vendor
+
+
+# SDCard
+# default is nosdcard, S/W button enabled in resource
+PRODUCT_CHARACTERISTICS := nosdcard
+
+
+# tcmiface for tcm support
+PRODUCT_PACKAGES += \
+    tcmiface
+
+PRODUCT_BOOT_JARS += \
+    tcmiface
+
+
+# Telephony Permissions
+
+
+# Tinyxml
+PRODUCT_PACKAGES += \
+    libtinyxml
+
+
+# Thermal
+PRODUCT_PACKAGES += \
+    android.hardware.thermal@2.0 \
+    android.hardware.thermal@2.0-service.qti
+
+
+# Treble
+PRODUCT_VENDOR_MOVE_ENABLED := true
+TARGET_MOUNT_POINTS_SYMLINKS := false
+
+
+# USB
+PRODUCT_PROPERTY_OVERRIDES += vendor.usb.diag.func.name=diag
+PRODUCT_PROPERTY_OVERRIDES += vendor.usb.use_ffs_mtp=0
+
+PRODUCT_PACKAGES += \
+    android.hardware.usb@1.2-service-qti
+
+
+# Userdata checkpoint
+PRODUCT_PACKAGES += \
+    checkpoint_gc
+
+
+# Verity
+PRODUCT_SUPPORTS_VERITY := false
+
+
+# Vibrator
+PRODUCT_PACKAGES += vendor.qti.hardware.vibrator.service
+
+PRODUCT_COPY_FILES += \
+    vendor/qcom/opensource/vibrator/excluded-input-devices.xml:$(TARGET_COPY_OUT_VENDOR)/etc/excluded-input-devices.xml
+
+
+# Wifi
+
+
+# Updater for sideload in recovery
+PRODUCT_PACKAGES += \
+    update_engine_sideload
+
+
+#soong namespace for qssi vs vendor differentiation
+SOONG_CONFIG_NAMESPACES += qssi_vs_vendor
+SOONG_CONFIG_qssi_vs_vendor += qssi_or_vendor
+SOONG_CONFIG_qssi_vs_vendor_qssi_or_vendor := vendor
+
+# display
+SOONG_CONFIG_NAMESPACES += qtidisplaycommonsys
+SOONG_CONFIG_qtidisplaycommonsys := displayconfig_enabled
+SOONG_CONFIG_qtidisplaycommonsys_displayconfig_enabled := true
+
+# lights
+SOONG_CONFIG_NAMESPACES += lights
+SOONG_CONFIG_lights += lighttargets
+SOONG_CONFIG_lights_lighttargets := lightaidltarget
+
+
+# Inherit the proprietary setup
+$(call inherit-product, device/fairphone/fp4-proprietary/device-vendor.mk)
+
+
+# Build some more display components to vendor
+$(call inherit-product, vendor/qcom/opensource/commonsys-intf/display/config/display-interfaces-product.mk)
+###################################################################################

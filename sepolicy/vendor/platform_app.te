@@ -1,0 +1,3 @@
+# IrisUI app is a platform_app, allow calls to iris hwservice
+
+hal_client_domain(platform_app, hal_display_iris)
