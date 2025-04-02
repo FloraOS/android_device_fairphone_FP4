@@ -52,3 +52,7 @@ QCOM_BOARD_PLATFORMS += lito
 # Display Properties
 PRODUCT_AAPT_CONFIG := normal
 PRODUCT_AAPT_PREF_CONFIG := xxhdpi
+
+
+# include additional QCOM build utilities
+include $(FP_PATH)/utils.mk
