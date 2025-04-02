@@ -131,6 +131,12 @@ BOARD_RECOVERYIMAGE_PARTITION_SIZE := 0x06000000
 TARGET_RECOVERY_FSTAB := $(FP_PATH)/rootdir/etc/recovery_AB_variant.fstab
 
 
+# SEPolicy
+include device/qcom/sepolicy_vndr/SEPolicy.mk
+BOARD_SEPOLICY_DIRS += \
+    $(FP_PATH)/sepolicy
+
+
 # Super partition
 BOARD_QTI_DYNAMIC_PARTITIONS_SIZE := 6438256640
 BOARD_SUPER_PARTITION_GROUPS := qti_dynamic_partitions
