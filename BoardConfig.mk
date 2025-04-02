@@ -59,6 +59,12 @@ BOARD_FLASH_BLOCK_SIZE := 131072 # (BOARD_KERNEL_PAGESIZE * 64)
 TARGET_FS_CONFIG_GEN := $(FP_PATH)/configs/config.fs
 
 
+# HIDL
+DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE := vendor/qcom/opensource/core-utils/vendor_framework_compatibility_matrix.xml
+DEVICE_MANIFEST_FILE := $(FP_PATH)/manifest.xml
+DEVICE_MATRIX_FILE   := $(FP_PATH)/compatibility_matrix.xml
+
+
 # Metadata partition
 # Define BOARD_USES_METADATA_PARTITION to create metadata mount point in system image
 BOARD_USES_METADATA_PARTITION := true
