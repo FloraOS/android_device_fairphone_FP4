@@ -600,6 +600,61 @@ PRODUCT_COPY_FILES += \
 
 
 # Wifi
+# WLAN driver config
+PRODUCT_COPY_FILES += \
+    $(FP_PATH)/wifi/WCNSS_qcom_cfg.ini:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/WCNSS_qcom_cfg.ini
+
+# WLAN specific aosp flag
+TARGET_USES_AOSP_FOR_WLAN := false
+
+# Enable STA + SAP Concurrency.
+WIFI_HIDL_FEATURE_DUAL_INTERFACE := true
+
+# Enable SAP + SAP Feature.
+QC_WIFI_HIDL_FEATURE_DUAL_AP := true
+
+# Enable vendor properties
+PRODUCT_PROPERTY_OVERRIDES += \
+    wifi.aware.interface=wifi-aware0
+
+WLAN_CHIPSET := qca_cld3
+
+# WiFi HAL
+PRODUCT_PACKAGES += \
+    android.hardware.wifi@1.0-service
+
+# WiFi Drivers
+PRODUCT_PACKAGES += \
+    $(WLAN_CHIPSET)_wlan.ko
+
+# WiFi Components
+PRODUCT_PACKAGES += \
+    e_loop \
+    hostapd \
+    hostapd.accept \
+    hostapd.deny \
+    hostapd_cli \
+    hostapd_default.conf \
+    icm.conf \
+    libnl \
+    libqsap_sdk \
+    libwifi-hal-qcom \
+    libwfdaac_vendor \
+    libwpa_client \
+    p2p_supplicant_overlay.conf \
+    sigma_dut \
+    vendor.qti.hardware.wifi.supplicant@1.0.vendor \
+    wificond \
+    wpa_cli \
+    wpa_supplicant.conf \
+    wpa_supplicant \
+    wpa_supplicant_overlay.conf
+
+# Permissions
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.hardware.wifi.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.xml \
+    frameworks/native/data/etc/android.hardware.wifi.direct.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.direct.xml \
+    frameworks/native/data/etc/android.hardware.wifi.passpoint.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.passpoint.xml
 
 
 # Updater for sideload in recovery
