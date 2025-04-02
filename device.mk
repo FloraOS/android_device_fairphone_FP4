@@ -380,6 +380,38 @@ PRODUCT_PACKAGES += \
 
 
 # GPS
+LOC_HIDL_VERSION = 4.0
+
+PRODUCT_PACKAGES += \
+    android.hardware.gnss@2.1-impl-qti \
+    android.hardware.gnss@2.1-service-qti \
+    flp.conf \
+    gnss_antenna_info.conf \
+    gps.conf \
+    libbatching \
+    libgeofencing \
+    libgnss \
+    libgps.utils \
+    libloc_core \
+    liblocation_api
+
+ifneq ($(QCPATH),)
+PRODUCT_PACKAGES += \
+    libgnsspps \
+    libloc_api_v02 \
+    libsynergy_loc_api
+endif
+
+# gps/location secuity configuration file
+PRODUCT_COPY_FILES += \
+    $(FP_PATH)/configs/sec_config:$(TARGET_COPY_OUT_VENDOR)/etc/sec_config
+
+# Permissions
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.hardware.location.gps.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.location.gps.xml
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.backup.ntpServer=0.pool.ntp.org
 
 
 # Graphics
