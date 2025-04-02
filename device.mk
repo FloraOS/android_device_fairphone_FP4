@@ -94,15 +94,19 @@ PRODUCT_PACKAGES += \
     libcomprcapture \
     libexthwplugin \
     libhdmiedid \
-    libhdmipassthru \
     libhfp \
     libsndmonitor \
     libspkrprot \
     libqcompostprocbundle \
     libqcomvisualizer \
     libqcomvoiceprocessing \
-    libssrec \
     libvolumelistener
+
+ifneq ($(QCPATH),)
+PRODUCT_PACKAGES += \
+    libhdmipassthru \
+    libssrec
+endif
 
 #Audio DLKM
 AUDIO_DLKM := audio_adsp_loader.ko
@@ -231,17 +235,20 @@ PRODUCT_PACKAGES += \
     libgui_vendor \
     libqdMetaData \
     libqdutils \
-    libsdmcore \
     libsdmutils \
     lights.lito \
     memtrack.lito \
     modetest \
     vendor.display.config@1.14 \
-    vendor.qti.hardware.display.allocator-service \
-    vendor.qti.hardware.display.composer-service
+    vendor.qti.hardware.display.allocator-service
 
 # From hardware/qcom/display/config/display-product.mk
 include $(FP_PATH)/display-product.mk
+
+ifneq ($(QCPATH),)
+PRODUCT_PACKAGES += \
+    libsdmcore \
+    vendor.qti.hardware.display.composer-service
 
 # Pixelworks
 PXLW_IRIS_SERVICE_PASSTHROUGH := 1
@@ -258,6 +265,18 @@ PRODUCT_PACKAGES += \
     libpwirisservice \
     vendor.pixelworks.hardware.display.iris-service \
     vendor.pixelworks.hardware.feature.irisfeature-service
+
+else
+# Following are dependencies for libsdmcore and
+# vendor.qti.hardware.display.composer-service
+PRODUCT_PACKAGES += \
+    libdrm.vendor \
+    libdrmutils \
+    libgpu_tonemapper \
+    libhistogram \
+    libsdedrm \
+    vendor.qti.hardware.display.composer@3.0.vendor
+endif
 
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.sys.sf.color_mode=0
