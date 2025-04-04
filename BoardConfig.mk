@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (C) 2024 FairPhone B.V.
+# Copyright (C) 2024-2025 FairPhone B.V.
 
 # config.mk
 #
