@@ -292,7 +292,7 @@ PRODUCT_COPY_FILES += \
 
 
 # Compile SystemUI on device with `speed`.
-PRODUCT_PROPERTY_OVERRIDES = \
+PRODUCT_PROPERTY_OVERRIDES += \
     dalvik.vm.systemuicompilerfilter=speed
 
 
