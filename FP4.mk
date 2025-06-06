@@ -6,4 +6,6 @@ allowed_list += product_manifest.xml Browser2
 # Include the device specific makefile
 $(call inherit-product, device/fairphone/FP4/device.mk)
 
+ifeq ($(QCPATH),)
 $(call enforce-product-packages-exist,$(allowed_list))
+endif
