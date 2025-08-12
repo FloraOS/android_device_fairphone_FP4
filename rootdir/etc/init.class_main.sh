@@ -132,7 +132,7 @@ case "$baseband" in
             fi
             ;;
         "concurrent")
-            start vendor.dataqti
+            stop vendor.dataqti
             if [ "$low_ram" != "true" ]; then
               start vendor.dataadpl
             fi
