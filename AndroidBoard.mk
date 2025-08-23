@@ -78,3 +78,9 @@ include vendor/qcom/opensource/core-utils/build/AndroidBoardCommon.mk
 # extra images
 #----------------------------------------------------------------------
 include $(FP_PATH)/generate_extra_images.mk
+
+
+#----------------------------------------------------------------------
+# Compile EDK II bootloader
+#----------------------------------------------------------------------
+include bootable/bootloader/edk2/AndroidBoot.mk
