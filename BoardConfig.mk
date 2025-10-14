@@ -287,6 +287,10 @@ TARGET_RECOVERY_FSTAB := $(FP_PATH)/rootdir/etc/recovery_AB_variant.fstab
 TARGET_RECOVERY_UI_MARGIN_HEIGHT := 100
 
 
+# RPC
+TARGET_NO_RPC := true
+
+
 # Sensors
 USE_SENSOR_MULTI_HAL := true
 
