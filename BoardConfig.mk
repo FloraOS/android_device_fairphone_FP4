@@ -59,6 +59,15 @@ BOARD_USES_ADRENO := true
 BOARD_AVB_ENABLE := true
 
 
+# Broken flags
+ifneq ($(QCPATH),)
+BUILD_BROKEN_USES_BUILD_COPY_HEADERS := true
+BUILD_BROKEN_USES_BUILD_HOST_EXECUTABLE := true
+BUILD_BROKEN_USES_BUILD_HOST_SHARED_LIBRARY := true
+BUILD_BROKEN_USES_BUILD_HOST_STATIC_LIBRARY := true
+endif
+
+
 # Chain partition for system
 BOARD_AVB_VBMETA_SYSTEM := system
 BOARD_AVB_VBMETA_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa4096.pem
