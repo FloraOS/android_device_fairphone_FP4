@@ -305,6 +305,15 @@ USE_SENSOR_MULTI_HAL := true
 
 
 # SEPolicy
+
+# Ensure clearing out policy dirs upon BoardConfig setup. This is a workaround for QCOM build system
+# pulling in BoardConfig.mk twice. These lines are no-op on open source builds.
+BOARD_SEPOLICY_DIRS :=
+BOARD_PLAT_PUBLIC_SEPOLICY_DIR :=
+BOARD_PLAT_PRIVATE_SEPOLICY_DIR :=
+PRODUCT_PUBLIC_SEPOLICY_DIRS :=
+PRODUCT_PRIVATE_SEPOLICY_DIRS :=
+
 include device/qcom/sepolicy_vndr/SEPolicy.mk
 BOARD_SEPOLICY_DIRS += \
     $(FP_PATH)/sepolicy/vendor
