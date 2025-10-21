@@ -31,6 +31,9 @@ AB_OTA_PARTITIONS += \
     vendor
 
 # Radio/modem A/B partitions
+# Include in target_files.zip only in release and open source builds, not in
+# proprietary blobs build.
+ifeq ($(QCPATH),)
 AB_OTA_PARTITIONS +=\
     abl \
     aop \
@@ -49,6 +52,7 @@ AB_OTA_PARTITIONS +=\
     uefisecapp \
     xbl \
     xbl_config
+endif
 
 
 # Adreno
