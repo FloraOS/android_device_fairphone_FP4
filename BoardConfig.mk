@@ -283,6 +283,10 @@ BOARD_DO_NOT_STRIP_VENDOR_MODULES := true
 BOARD_USES_GENERIC_AUDIO := true
 
 
+#Enable PD locater/notifier
+TARGET_PD_SERVICE_ENABLED := true
+
+
 # Persist partition
 BOARD_PERSISTIMAGE_FILE_SYSTEM_TYPE := ext4
 
