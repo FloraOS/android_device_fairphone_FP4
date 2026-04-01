@@ -1026,7 +1026,7 @@ ifeq ($(FP4_PROPRIETARY_PATH),)
 FP4_PROPRIETARY_PATH := device/fairphone/fp4-proprietary
 endif
 
-EXPECTED_BLOBS_VERSION := 14.32.0
+EXPECTED_BLOBS_VERSION := 14.33.0
 
 GET_BLOBS_CMD = vendor/fairphone/tools/bin/get_blobs.py --device FP4 --build-id $(EXPECTED_BLOBS_VERSION) --blobs-dir $(FP4_PROPRIETARY_PATH)
 
