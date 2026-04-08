@@ -14,3 +14,5 @@ persist.vendor.st_nfc_defaut_se         u:object_r:vendor_st_nfc_prop:s0
 
 vendor.tct.MMITestPower                 u:object_r:vendor_t2m_sys_prop:s0
 persist.vendor.sensors.calset           u:object_r:vendor_sensors_prop:s0
+
+ro.vendor.hw_version                    u:object_r:vendor_hw_version_prop:s0

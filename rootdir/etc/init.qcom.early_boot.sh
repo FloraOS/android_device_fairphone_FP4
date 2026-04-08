@@ -546,6 +546,10 @@ else
     setprop ro.vendor.alarm_boot false
 fi
 
+# Set the Hardware Version Property
+hw_version=`cat /sys/class/board_id/version`
+setprop ro.vendor.hw_version "$hw_version"
+
 # copy GPU frequencies to vendor property
 if [ -f /sys/class/kgsl/kgsl-3d0/gpu_available_frequencies ]; then
     gpu_freq=`cat /sys/class/kgsl/kgsl-3d0/gpu_available_frequencies` 2> /dev/null

@@ -17,3 +17,6 @@ get_prop(system_app, vendor_t2m_sys_prop)
 # for AW882xx
 allow system_app oem_persist_aw_cali_file:file create_file_perms;
 allow system_app oem_persist_aw_cali_file:dir rw_dir_perms;
+
+# for Hardware Version
+get_prop(system_app, vendor_hw_version_prop)
