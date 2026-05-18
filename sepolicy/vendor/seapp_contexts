@@ -1,2 +1,2 @@
 # Friendly MMITest
-user=_app seinfo=platform name=com.android.mmifriendly domain=tctmmi_app type=mmi_app_data_file
+user=_app seinfo=platform name=com.android.mmifriendly domain=tctmmi_app type=app_data_file
