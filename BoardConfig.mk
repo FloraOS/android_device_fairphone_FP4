@@ -233,7 +233,16 @@ BOARD_KERNEL_CMDLINE += androidboot.memcg=1
 BOARD_KERNEL_CMDLINE += androidboot.usbcontroller=a600000.dwc3
 BOARD_KERNEL_CMDLINE += cgroup_disable=pressure
 BOARD_KERNEL_CMDLINE += cgroup.memory=nokmem,nosocket
-BOARD_KERNEL_CMDLINE += earlycon=msm_geni_serial,0x888000
+# No earlycon= here. lagoon.dtsi already passes
+# earlycon=msm_geni_serial,0x98c000 in /chosen/bootargs, which is
+# qupv3_se9_2uart - the qcom,msm-geni-console SE on the qupv3_1 wrapper, i.e.
+# the actual debug UART. This line used to read 0x888000, which is
+# qupv3_se2_i2c/qupv3_se2_spi: a different serial engine, on a different
+# wrapper (qupv3_0), with different clocks, and status = "disabled" in DT.
+# It was inert only by luck - the DTB bootargs are parsed first and
+# setup_earlycon() returns -EALREADY for any later earlycon= - so the bogus
+# address was never used. Had it won, earlycon would have driven MMIO at an
+# unclocked, disabled QUP SE before any console existed to report it.
 BOARD_KERNEL_CMDLINE += loop.max_part=7
 BOARD_KERNEL_CMDLINE += lpm_levels.sleep_disabled=1
 BOARD_KERNEL_CMDLINE += msm_rtb.filter=0x237
