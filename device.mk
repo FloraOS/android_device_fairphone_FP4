@@ -265,10 +265,11 @@ QCOM_BOARD_PLATFORMS += lito
 
 
 # Boot
+# update_engine (and its sideload flavour used by recovery) dropped support for
+# the boot HAL below HIDL 1.2, so the AIDL service is the only usable option.
 PRODUCT_PACKAGES += \
-    android.hardware.boot@1.1-impl-qti \
-    android.hardware.boot@1.1-impl-qti.recovery \
-    android.hardware.boot@1.1-service \
+    android.hardware.boot-service.qti \
+    android.hardware.boot-service.qti.recovery \
     bootctrl.lito \
     libminui
 
