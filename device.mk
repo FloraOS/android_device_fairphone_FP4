@@ -402,6 +402,20 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.crypto.volume.filenames_mode = "aes-256-cts"
 
 
+# Ext4 tuning
+#
+# fs_mgr shells out to /system/bin/tune2fs whenever it has to turn quota,
+# casefolding, metadata_csum/64bit/extent or fs-verity on for an ext4 partition
+# it has just checked or formatted; without the binary it logs "... because
+# /system/bin/tune2fs is missing" and silently leaves the feature off. The
+# system image gets tune2fs from base_system.mk, but the first-stage ramdisk
+# (which mounts and may format /metadata) does not, so pull in the static
+# flavour external/e2fsprogs builds for exactly that purpose. AndroidBoard.mk
+# reuses the same binary for the recovery ramdisk, which has no tune2fs module
+# of its own.
+PRODUCT_PACKAGES += tune2fs_ramdisk
+
+
 # Fastbootd
 PRODUCT_PACKAGES += fastbootd
 # Add default implementation of fastboot HAL.

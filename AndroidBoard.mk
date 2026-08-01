@@ -107,6 +107,33 @@ include vendor/qcom/opensource/core-utils/build/AndroidBoardCommon.mk
 
 
 #----------------------------------------------------------------------
+# tune2fs for recovery
+#----------------------------------------------------------------------
+# fs_mgr runs /system/bin/tune2fs to enable quota, casefolding, metadata_csum
+# and fs-verity on the ext4 filesystems it checks or formats, and recovery
+# hits those paths every time it wipes or reformats a partition. There is no
+# tune2fs.recovery module in external/e2fsprogs - only the system binary and
+# the static tune2fs_ramdisk one - so recovery has always logged
+#
+#   Unable to ... because /system/bin/tune2fs is missing
+#
+# and skipped the tuning. tune2fs_ramdisk is statically linked, so the same
+# binary device.mk installs into the first-stage ramdisk can be dropped into
+# the recovery root as-is. mkbootfs takes the mode from the system image's
+# fs_config table, where system/bin/tune2fs is already 0755.
+FP4_RAMDISK_TUNE2FS := $(TARGET_RAMDISK_OUT)/system/bin/tune2fs
+FP4_RECOVERY_TUNE2FS := $(TARGET_RECOVERY_ROOT_OUT)/system/bin/tune2fs
+
+$(FP4_RECOVERY_TUNE2FS): $(FP4_RAMDISK_TUNE2FS)
+	@echo "Install: $@"
+	$(hide) mkdir -p $(dir $@)
+	$(hide) cp -f $< $@
+	$(hide) chmod 755 $@
+
+ALL_DEFAULT_INSTALLED_MODULES += $(FP4_RECOVERY_TUNE2FS)
+
+
+#----------------------------------------------------------------------
 # extra images
 #----------------------------------------------------------------------
 include $(FP_PATH)/generate_extra_images.mk
