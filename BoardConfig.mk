@@ -210,6 +210,14 @@ BOARD_KERNEL_CMDLINE += service_locator.enable=1
 BOARD_KERNEL_CMDLINE += swiotlb=2048
 BOARD_KERNEL_CMDLINE += video=vfb:640x400,bpp=32,memsize=3072000
 BOARD_KERNEL_CMDLINE += deferred_probe_timeout=300
+
+# Do NOT enable a verbose boot console here. ttyMSM0 is a blocking 115200 baud
+# console: with initcall_debug/ignore_loglevel the boot log is megabytes, every
+# printk stalls the CPU that emitted it for milliseconds, and the resulting
+# stretch of boot is long enough to trip the timing-sensitive panics and
+# subsystem-restart timeouts this platform ships with. Post-mortem logs now come
+# from pstore/ramoops instead (ramoops_region in lagoon-fp4.dtsi), which costs
+# nothing at runtime and survives a reset.
 ifneq (,$(filter eng,$(TARGET_BUILD_VARIANT)))
 BOARD_KERNEL_CMDLINE += console=ttyMSM0,115200,n8
 BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
