@@ -40,7 +40,12 @@ set_prop(tctmmi_app, vendor_t2m_sys_prop)
 set_prop(tctmmi_app, vendor_sensors_prop)
 set_prop(tctmmi_app, vendor_audio_prop)
 set_prop(tctmmi_app, vendor_bt_prop)
-set_prop(tctmmi_app, exported_system_radio_prop)
+# The factory MMI app used to reach sys.usb.config through
+# exported_system_radio_prop. That type is gone from current policy - it only
+# survives in the 30.0 compat mapping - and sys.usb.config / sys.usb.configfs
+# are usb_control_prop now, which the platform neverallows outside coredomain
+# and vendor_init. So this app can no longer switch the USB configuration; its
+# USB test has to go through a core domain instead.
 set_prop(tctmmi_app, exported_system_prop)
 get_prop(tctmmi_app, vendor_tct_default_prop)
 get_prop(tctmmi_app, vendor_t2m_sys_prop)

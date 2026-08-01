@@ -118,16 +118,10 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <instance>default</instance>
         </interface>
     </hal>
-    <!-- NFC HIDL service -->
-    <hal format="hidl">
-        <name>android.hardware.nfc</name>
-        <transport>hwbinder</transport>
-        <version>1.2</version>
-        <interface>
-            <name>INfc</name>
-            <instance>default</instance>
-        </interface>
-    </hal>
+    <!-- NFC HIDL service is declared by the ST service's own VINTF fragment,
+         vendor/fairphone/st/.../android.hardware.nfc@1.2-service-st.xml.
+         Declaring @1.2::INfc/default here as well makes checkvintf reject the
+         vendor manifest as a conflicting FqInstance. -->
     <!-- IRADIO -->
     <hal format="hidl">
         <name>android.hardware.radio</name>

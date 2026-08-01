@@ -17,8 +17,18 @@ ifeq ($(KERNEL_DEFCONFIG),)
 endif
 endif
 
-# Use a newer clang than SOONG_LLVM_PREBUILTS_PATH for kernel
-KERNEL_LLVM_PREBUILTS_PATH := prebuilts/clang/host/linux-x86/clang-r487747c/bin
+# Use a newer clang than SOONG_LLVM_PREBUILTS_PATH for kernel.
+# Old pinned releases get dropped from prebuilts/clang over time, so pick the
+# first version that is actually present instead of hard-coding a single one.
+KERNEL_LLVM_PREBUILTS_DIR := $(firstword $(wildcard \
+    prebuilts/clang/host/linux-x86/clang-r487747c \
+    prebuilts/clang/host/linux-x86/clang-r547379 \
+    prebuilts/clang/host/linux-x86/clang-r563880 \
+    prebuilts/clang/host/linux-x86/clang-r574158))
+ifeq ($(KERNEL_LLVM_PREBUILTS_DIR),)
+$(error No usable clang prebuilt found for the kernel build under prebuilts/clang/host/linux-x86)
+endif
+KERNEL_LLVM_PREBUILTS_PATH := $(KERNEL_LLVM_PREBUILTS_DIR)/bin
 
 DTC := $(HOST_OUT_EXECUTABLES)/dtc
 
@@ -51,11 +61,33 @@ TARGET_KERNEL_MAKE_ENV += LEX=$(TEMP_TOP)/prebuilts/build-tools/$(HOST_PREBUILT_
 TARGET_KERNEL_MAKE_ENV += M4=$(TEMP_TOP)/prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/m4
 TARGET_KERNEL_MAKE_ENV += YACC=$(TEMP_TOP)/prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/bison
 
+# Vendor HALs put the kernel's headers_install output on the include path with
+# -I, which is searched before bionic, so the raw uapi headers shadow bionic's
+# scrubbed ones and redefine what bionic's public headers define themselves.
+# Strip the libc-owned headers back out once they have been installed.
+KERNEL_HEADERS_POST_INSTALL_TOOL := $(FP_PATH)/tools/prune_kernel_uapi_headers.py
+
+# soong_ui hands the build a sanitised PATH in which every host tool it does not
+# sanction resolves to a stub that fails. perl is one of those, and the kernel
+# needs it in two places that cannot be redirected with a make variable:
+# lib/Makefile's OID registry generator and kernel/gen_kheaders.sh. Give the
+# kernel sub-make a PATH prefix holding just perl, taken from the host.
+KERNEL_HOST_PERL := $(firstword $(wildcard /usr/bin/perl /bin/perl /usr/local/bin/perl))
+ifeq ($(KERNEL_HOST_PERL),)
+$(error No host perl found; building the msm-4.19 kernel requires one)
+endif
+KERNEL_HOST_TOOLS := $(TARGET_OUT_INTERMEDIATES)/kernel-host-tools
+TARGET_KERNEL_MAKE_ENV += PATH=$(TEMP_TOP)/$(KERNEL_HOST_TOOLS):$$PATH
 
 # Build kernel
 include $(TARGET_KERNEL_SOURCE)/AndroidKernel.mk
 
-$(TARGET_PREBUILT_KERNEL): $(DTC)
+$(KERNEL_HOST_TOOLS)/perl:
+	$(hide) mkdir -p $(dir $@)
+	$(hide) ln -sf $(KERNEL_HOST_PERL) $@
+
+$(TARGET_PREBUILT_KERNEL): $(DTC) $(KERNEL_HOST_TOOLS)/perl
+$(KERNEL_HEADERS_INSTALL): $(KERNEL_HOST_TOOLS)/perl
 
 $(INSTALLED_KERNEL_TARGET): $(TARGET_PREBUILT_KERNEL) | $(ACP)
 	$(transform-prebuilt-to-target)
@@ -83,4 +115,4 @@ include $(FP_PATH)/generate_extra_images.mk
 #----------------------------------------------------------------------
 # Compile EDK II bootloader
 #----------------------------------------------------------------------
-include bootable/bootloader/edk2/AndroidBoot.mk
+#include bootable/bootloader/edk2/AndroidBoot.mk

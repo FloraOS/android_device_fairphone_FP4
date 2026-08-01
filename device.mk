@@ -10,8 +10,11 @@ $(call inherit-product-if-exists, vendor/fairphone/fp4/device-vendor.mk)
 # Inherit Virtual AB configs
 $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
 
-# Inherit GSI keys to first stage ramdisk
-$(call inherit-product, $(SRC_TARGET_DIR)/product/gsi_keys.mk)
+# Inherit GSI keys to first stage ramdisk.
+# gsi_keys.mk was replaced upstream by developer_gsi_keys.mk, which installs the
+# same public keys into the first-stage ramdisk so a Developer GSI passes
+# verified boot.
+$(call inherit-product, $(SRC_TARGET_DIR)/product/developer_gsi_keys.mk)
 
 # For PRODUCT_COPY_FILES, the first instance takes precedence.
 # Since we want use QC specific files, we should inherit
@@ -22,14 +25,20 @@ $(call inherit-product-if-exists, $(QCPATH)/common/config/device-vendor.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_base_telephony.mk)
 
-
 # API level the device was shipped
 PRODUCT_SHIPPING_API_LEVEL := 30
 SHIPPING_API_LEVEL := 30
 
+# System SDK versions the vendor image may be built against: the level the
+# device shipped with, plus the current one for the components that have moved
+# on. The codename must never end up in here - on a released platform
+# PLATFORM_VERSION_CODENAME is REL, which board_config.mk rejects.
+BOARD_SYSTEMSDK_VERSIONS := 30 $(PLATFORM_SDK_VERSION)
+
 # GRF levels
 BOARD_SHIPPING_API_LEVEL := 30
-BOARD_API_LEVEL := 30
+# BOARD_API_LEVEL is intentionally not set here: build/make/core/board_config.mk
+# derives it from RELEASE_BOARD_API_LEVEL and errors out if it is set manually.
 
 
 PRODUCT_BRAND := Fairphone
@@ -37,14 +46,9 @@ PRODUCT_DEVICE := FP4
 PRODUCT_MANUFACTURER := Fairphone
 PRODUCT_MODEL := FP4
 PRODUCT_NAME := FP4
-
-# Actual product name is slightly different. Hence, use the actual name
-# only in fingerprint while keeping it as FP4 everywhere else.
-TARGET_PRODUCT_OVERRIDE := FP4eea
-PRODUCT_BUILD_PROP_OVERRIDES += \
-    PRODUCT_NAME=$(TARGET_PRODUCT_OVERRIDE) \
-    TARGET_PRODUCT=$(TARGET_PRODUCT_OVERRIDE)
-
+PRODUCT_SOONG_NAMESPACES += \
+    hardware/qcom/wlan \
+    hardware/qcom/wlan/legacy
 TARGET_BOARD_PLATFORM := lito
 
 
@@ -317,7 +321,6 @@ PRODUCT_PACKAGES += \
     libdisplayconfig.qti.vendor \
     libdrm \
     libgralloc.qti \
-    libgui_vendor \
     libqdMetaData \
     libqdutils \
     libsdmutils \
@@ -382,7 +385,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # DRM
 PRODUCT_PACKAGES += \
-    android.hardware.drm@1.3-service.clearkey
+    android.hardware.drm-service.clearkey
 
 
 # Encryption
@@ -485,11 +488,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.hardware.vulkan=adreno \
     ro.hardware.egl=adreno \
     ro.gfx.driver.1=com.qualcomm.qti.gpudrivers.lito.api30
-
-
-# GZip
-PRODUCT_HOST_PACKAGES += \
-    minigzip
 
 
 # Healthd packages
@@ -709,7 +707,7 @@ PRODUCT_PACKAGES += \
 
 
 # NFC (ST stack)
-$(call inherit-product, vendor/st/nfc/st21nfc/NfcDeviceConfigVendor.st21nfc.mk)
+$(call inherit-product, vendor/fairphone/st/nfc/st21nfc/NfcDeviceConfigVendor.st21nfc.mk)
 
 # rc file
 PRODUCT_PACKAGES += \
@@ -725,10 +723,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.vendor.st_nfc_defaut_se=SIM1 \
     ro.hardware.nfc_nci=pn54x
 
-
-# Oemaids
-PRODUCT_PACKAGES += \
-    liboemaids_vendor
 
 
 # OEM Unlock reporting
@@ -776,9 +770,7 @@ PRODUCT_PROPERTY_OVERRIDES += ro.control_privapp_permissions=enforce
 
 # Protobuf
 PRODUCT_PACKAGES += \
-    libprotobuf-cpp-full \
-    libprotobuf-cpp-full-vendorcompat \
-    libprotobuf-cpp-lite-vendorcompat
+    libprotobuf-cpp-full
 
 
 # include additional QCOM build utilities
@@ -804,7 +796,6 @@ PRODUCT_PACKAGES += \
 
 # Sensors
 PRODUCT_PACKAGES += \
-    sensors.FP4 \
     android.hardware.sensors@2.0-service.multihal \
     android.hardware.sensors@2.0-ScopedWakelock.vendor \
     libsensorndkbridge
@@ -920,9 +911,6 @@ PRODUCT_PACKAGES += \
     checkpoint_gc
 
 
-# Verity
-PRODUCT_SUPPORTS_VERITY := false
-
 
 # Vibrator
 PRODUCT_PACKAGES += vendor.qti.hardware.vibrator.service
@@ -953,7 +941,7 @@ WLAN_CHIPSET := qca_cld3
 
 # WiFi HAL
 PRODUCT_PACKAGES += \
-    android.hardware.wifi@1.0-service
+    android.hardware.wifi-service
 
 # WiFi Drivers
 PRODUCT_PACKAGES += \

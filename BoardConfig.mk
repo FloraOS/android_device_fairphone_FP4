@@ -30,29 +30,45 @@ AB_OTA_PARTITIONS += \
     recovery \
     vendor
 
-# Radio/modem A/B partitions
-# Include in target_files.zip only in release and open source builds, not in
-# proprietary blobs build.
-ifeq ($(QCPATH),)
-AB_OTA_PARTITIONS +=\
+# Firmware partitions that must never be shipped inside an OTA ZIP.
+#
+# The whole boot chain (xbl/abl/tz/hyp/...) along with the modem, DSP and
+# Bluetooth firmware is signed by Fairphone and is only ever updated through
+# their official firmware releases. The remaining entries are scratch, log or
+# runtime-populated areas (apdp, ddr, logfs, tunning, metadata) that carry no
+# meaningful build output. Pushing our own copies of any of them through
+# update_engine is at best rejected by the device and at worst unrecoverable.
+#
+# The images themselves are still built and still land in the RADIO/ directory
+# of target_files.zip (see device/fairphone/fp4-proprietary/Android.mk), so
+# fastboot flashing and factory image generation are unaffected. Only the A/B
+# payload loses them: build/make/core/Makefile writes META/ab_partitions.txt out
+# of AB_OTA_PARTITIONS, and that file is what ota_from_target_files packs.
+FP4_OTA_EXCLUDED_PARTITIONS := \
     abl \
     aop \
+    apdp \
     bluetooth \
     core_nhlos \
+    ddr \
     devcfg \
     dsp \
     featenabler \
     hyp \
     imagefv \
     keymaster \
+    logfs \
+    metadata \
     modem \
     multiimgoem \
     qupfw \
+    storsec \
+    toolsfv \
+    tunning \
     tz \
     uefisecapp \
     xbl \
     xbl_config
-endif
 
 
 # Adreno
@@ -85,7 +101,15 @@ BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX_LOCATION := 2
 AUDIO_FEATURE_ENABLED_AHAL_EXT := false
 AUDIO_FEATURE_ENABLED_COMPRESS_VOIP := false
 AUDIO_FEATURE_ENABLED_DTS_EAGLE := false
-AUDIO_FEATURE_ENABLED_EXTENDED_COMPRESS_FORMAT := true
+# The extended compress API (compress_set_metadata, compress_get_metadata,
+# compress_set_next_track_param) only exists in the CAF fork of
+# external/tinycompress. The AOSP copy keeps it behind
+# ENABLE_EXTENDED_COMPRESS_FORMAT, which cannot be switched on there because
+# compress_set_next_track_param needs SNDRV_COMPRESS_SET_NEXT_TRACK_PARAM, a
+# Qualcomm ioctl that bionic's scrubbed uapi headers do not carry. With the
+# feature off the HAL falls back to the no-op macros in audio_extn.h, which
+# costs gapless metadata on compress-offloaded playback and nothing else.
+AUDIO_FEATURE_ENABLED_EXTENDED_COMPRESS_FORMAT := false
 AUDIO_FEATURE_ENABLED_EXTN_FORMATS := true
 AUDIO_FEATURE_ENABLED_EXTN_FLAC_DECODER := true
 AUDIO_FEATURE_ENABLED_FM_POWER_OPT := false
@@ -328,11 +352,14 @@ USE_SENSOR_MULTI_HAL := true
 # Ensure clearing out policy dirs upon BoardConfig setup. This is a workaround for QCOM build system
 # pulling in BoardConfig.mk twice. These lines are no-op on open source builds.
 BOARD_SEPOLICY_DIRS :=
-BOARD_PLAT_PUBLIC_SEPOLICY_DIR :=
-BOARD_PLAT_PRIVATE_SEPOLICY_DIR :=
+SYSTEM_EXT_PUBLIC_SEPOLICY_DIRS :=
+SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS :=
 PRODUCT_PUBLIC_SEPOLICY_DIRS :=
 PRODUCT_PRIVATE_SEPOLICY_DIRS :=
 
+# sepolicy_vndr/SEPolicy.mk already pulls in the device/qcom/sepolicy (QSSI)
+# system_ext and product dirs, so device/qcom/sepolicy/SEPolicy.mk must not be
+# included as well or every policy dir is listed twice.
 include device/qcom/sepolicy_vndr/SEPolicy.mk
 BOARD_SEPOLICY_DIRS += \
     $(FP_PATH)/sepolicy/vendor
@@ -349,7 +376,8 @@ BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := \
 
 
 # Treble
-BOARD_SYSTEMSDK_VERSIONS := $(SHIPPING_API_LEVEL)
+# BOARD_SYSTEMSDK_VERSIONS lives in device.mk, next to the shipping API level it
+# is derived from.
 PRODUCT_FULL_TREBLE_OVERRIDE := true
 
 
@@ -400,3 +428,11 @@ WIFI_DRIVER_STATE_ON := "ON"
 
 # Vendor-specific definitions
 -include vendor/fairphone/fp4/BoardConfigVendor.mk
+
+#################################################################################
+
+# Strip the firmware partitions back out of the OTA payload. This deliberately
+# runs last so that anything the vendor board-defs included above append to
+# AB_OTA_PARTITIONS is filtered too. See FP4_OTA_EXCLUDED_PARTITIONS at the top
+# of this file for what is being dropped and why.
+AB_OTA_PARTITIONS := $(filter-out $(FP4_OTA_EXCLUDED_PARTITIONS),$(AB_OTA_PARTITIONS))
