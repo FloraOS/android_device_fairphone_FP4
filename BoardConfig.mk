@@ -262,7 +262,47 @@ BOARD_KERNEL_CMDLINE += deferred_probe_timeout=300
 # from pstore/ramoops instead (ramoops_region in lagoon-fp4.dtsi), which costs
 # nothing at runtime and survives a reset.
 ifneq (,$(filter eng,$(TARGET_BUILD_VARIANT)))
-BOARD_KERNEL_CMDLINE += console=ttyMSM0,115200,n8
+# Put the kernel console on the panel, not on the UART.
+#
+# This device has no reachable log of its own. pstore/ramoops attaches but the
+# region does not survive a reset (a marker written to /dev/pmsg0 is gone even
+# after a warm key-combo reboot), /data never gets far enough to hold a
+# tombstone, and the debug UART needs the phone opened. fp4_defconfig now
+# carries CONFIG_VT, CONFIG_FRAMEBUFFER_CONSOLE and CONFIG_DRM_FBDEV_EMULATION,
+# so msm_drv.c's msm_fbdev_init() gives us an fbdev on the DSI panel and fbcon
+# binds a console to it. printk then lands on the screen, where it can simply be
+# photographed. The VT screen buffer survives the dummycon-to-fbcon handover, so
+# the last screenful from before the panel came up is redrawn too.
+#
+# This also settles the console cost. Dropping console=ttyMSM0 from this list on
+# its own changed nothing, because register_console() auto-enables the first
+# console that registers whenever no console= was given on the command line (see
+# the has_preferred logic in kernel/printk/printk.c), and the geni driver
+# registers one - "console [ttyMSM0] enabled" at 4.7s, with recovery's
+# ro.boottime.init unmoved at 11.89s. Naming a console here sets
+# preferred_console, which suppresses that auto-enable, so ttyMSM0 stops
+# draining every printk at 11520 bytes/s and fbcon takes over at memory speed.
+BOARD_KERNEL_CMDLINE += console=tty0
+#
+# printk to a serial console is synchronous: the CPU that called printk holds
+# the console lock and busy-waits for the UART FIFO to drain at the configured
+# baud rate. 115200 8N1 is 11520 bytes/s, and the cost is paid by whatever is
+# booting, not in the background. Recovery makes the arithmetic plain: its
+# console is enabled at 4.68s ("console [ttyMSM0] enabled"), its kmsg is ~124 kB,
+# 124 kB / 11520 B/s is ~10.8s, and second stage init starts at 11.86s of which
+# only 0.14s is first stage and 0.30s is the policy load. Essentially the whole
+# of recovery's boot time is the UART.
+#
+# Recovery survives that because it only ever emits ~124 kB. A full eng boot -
+# permissive, every init command logged, the vendor DLKMs, the subsystem bringup
+# - emits several MB, which at the same rate is minutes of stalled CPU, long
+# enough for the QCOM subsystem-restart timeouts and the apps watchdog to fire.
+# That is what the device was doing: no adb, splash still on screen, then the
+# watchdog dropping the SoC into EDL about six minutes in.
+#
+# Nothing can read this UART without opening the phone anyway. The log stays in
+# the kmsg ring buffer either way, so nothing is lost by not draining it out a
+# serial port at 11.5 kB/s.
 BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
 # Land in recovery, not in the bootloader, when init hits a fatal error.
 # reboot_utils.cpp defaults init_fatal_reboot_target to "bootloader", which on
