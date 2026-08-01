@@ -248,7 +248,10 @@ BOARD_KERNEL_CMDLINE += lpm_levels.sleep_disabled=1
 BOARD_KERNEL_CMDLINE += msm_rtb.filter=0x237
 BOARD_KERNEL_CMDLINE += service_locator.enable=1
 BOARD_KERNEL_CMDLINE += swiotlb=2048
-BOARD_KERNEL_CMDLINE += video=vfb:640x400,bpp=32,memsize=3072000
+# No video=vfb: here. vfb is the virtual (memory backed) framebuffer driver,
+# and CONFIG_FB_VIRTUAL is not set in fp4_defconfig, so the argument only ever
+# got parsed and dropped. The panel comes up through the MSM DRM driver, which
+# takes its mode from the DSI panel node in DT and ignores video=.
 BOARD_KERNEL_CMDLINE += deferred_probe_timeout=300
 
 # Do NOT enable a verbose boot console here. ttyMSM0 is a blocking 115200 baud
@@ -261,6 +264,13 @@ BOARD_KERNEL_CMDLINE += deferred_probe_timeout=300
 ifneq (,$(filter eng,$(TARGET_BUILD_VARIANT)))
 BOARD_KERNEL_CMDLINE += console=ttyMSM0,115200,n8
 BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
+# Land in recovery, not in the bootloader, when init hits a fatal error.
+# reboot_utils.cpp defaults init_fatal_reboot_target to "bootloader", which on
+# this device means fastboot with no shell and no log. Recovery gives adb back
+# straight away, and it is also the only way to tell an init abort apart from a
+# stall: a stall still ends in the watchdog dropping the SoC into EDL, which
+# takes minutes and needs a battery pull to get out of.
+BOARD_KERNEL_CMDLINE += androidboot.init_fatal_reboot_target=recovery
 endif
 
 #Enable dtb in boot image and boot image header version 2 support.
@@ -303,12 +313,14 @@ BOARD_VENDOR_KERNEL_MODULES := \
 
 ifneq (,$(filter userdebug eng, $(TARGET_BUILD_VARIANT)))
     ifeq (,$(findstring perf_defconfig, $(KERNEL_DEFCONFIG)))
-        BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/atomic64_test.ko
-        BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/lkdtm.ko
-        BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/locktorture.ko
-        BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/rcutorture.ko
-        BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/test_user_copy.ko
-        BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/torture.ko
+        FP4_DEBUG_KERNEL_MODULES := \
+            $(KERNEL_MODULES_OUT)/atomic64_test.ko \
+            $(KERNEL_MODULES_OUT)/lkdtm.ko \
+            $(KERNEL_MODULES_OUT)/locktorture.ko \
+            $(KERNEL_MODULES_OUT)/rcutorture.ko \
+            $(KERNEL_MODULES_OUT)/test_user_copy.ko \
+            $(KERNEL_MODULES_OUT)/torture.ko
+        BOARD_VENDOR_KERNEL_MODULES += $(FP4_DEBUG_KERNEL_MODULES)
     endif
 endif
 
@@ -318,6 +330,21 @@ BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/rmnet_perf.ko
 
 # Wifi
 BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/qca_cld3_wlan.ko
+
+# Ship the debug modules, but keep them out of modules.load.
+#
+# When BOARD_VENDOR_KERNEL_MODULES_LOAD is unset the build lists every entry of
+# BOARD_VENDOR_KERNEL_MODULES in /vendor/lib/modules/modules.load, and that list
+# is the autoload list. rcutorture and locktorture are not tests you run and
+# collect: loading them spawns kthreads that hammer RCU and the locking
+# primitives on every CPU for as long as they stay loaded, and lkdtm exists
+# purely to crash the kernel on demand. Nothing walks this file on FP4 today
+# (init.target.rc modprobes an explicit list, and there is no vendor_ramdisk),
+# but anything that ever does - a modprobe --all=, a first-stage module list -
+# would take the boot down with it. Keep them installed so they can still be
+# insmod'ed by hand.
+BOARD_VENDOR_KERNEL_MODULES_LOAD := \
+    $(filter-out $(FP4_DEBUG_KERNEL_MODULES),$(BOARD_VENDOR_KERNEL_MODULES))
 
 
 # Metadata partition

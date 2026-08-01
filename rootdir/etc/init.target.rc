@@ -258,3 +258,49 @@ service hapticCallOfDuty   /system/system_ext/bin/hapticscreencap 5
     user  root
     group root audioserver audio system
     disabled
+
+# Bringup: bring adbd up in "on init" instead of "on boot".
+#
+# This platform has no usable post-mortem log. pstore/ramoops is configured and
+# the driver attaches, but the region does not survive a reset - a marker
+# written to /dev/pmsg0 is gone even after a warm key-combo reboot - and the
+# debug UART is not reachable without opening the phone. That leaves adb as the
+# only channel, and the stock QCOM USB bringup only runs in "on boot": the
+# gadget skeleton, the ffs.adb function and the functionfs mount all live in
+# init.qcom.usb.rc's "on boot" block, and sys.usb.configfs is only raised from
+# the "on property:vendor.usb.controller=*" action that init.target.rc's own
+# "on boot" triggers. Anything that stalls init before "on boot" - and
+# "on late-fs" alone has a mount_all --late plus a wait_for_prop that blocks
+# forever if hwservicemanager never reports ready - therefore leaves the device
+# with no adb, no console and nothing on screen but the bootloader splash,
+# until the watchdog bites and the SoC drops into EDL.
+#
+# So set up a minimal adb-only gadget as early as init can touch configfs.
+# init.rc mounts /config in its own "on init" block, and actions for the same
+# trigger run in file-import order, so /config is already there by the time
+# this runs. The composition is deliberately just ffs.adb; the full QCOM
+# composition still gets built in "on boot" and takes over from there.
+#
+# ro.debuggable gates this to eng/userdebug, so user builds are unaffected.
+on init && property:ro.debuggable=1
+    mkdir /config/usb_gadget/g1 0770
+    chown root system config/usb_gadget/g1
+    mkdir /config/usb_gadget/g1/strings/0x409 0770
+    write /config/usb_gadget/g1/bcdUSB 0x0200
+    write /config/usb_gadget/g1/idVendor 0x18d1
+    write /config/usb_gadget/g1/idProduct 0x4ee7
+    write /config/usb_gadget/g1/strings/0x409/serialnumber ${ro.boot.serialno}
+    write /config/usb_gadget/g1/strings/0x409/manufacturer ${ro.product.manufacturer}
+    write /config/usb_gadget/g1/strings/0x409/product ${ro.product.model}
+    mkdir /config/usb_gadget/g1/configs/b.1 0770
+    chown root system config/usb_gadget/g1/configs/b.1
+    mkdir /config/usb_gadget/g1/configs/b.1/strings/0x409 0770
+    chown root system config/usb_gadget/g1/configs/b.1/strings/0x409
+    write /config/usb_gadget/g1/configs/b.1/MaxPower 900
+    mkdir /config/usb_gadget/g1/functions/ffs.adb
+    mkdir /dev/usb-ffs 0775 shell system
+    mkdir /dev/usb-ffs/adb 0770 shell system
+    mount functionfs adb /dev/usb-ffs/adb uid=2000,gid=1000,rmode=0770,fmode=0660
+    setprop sys.usb.controller ${ro.boot.usbcontroller}
+    setprop sys.usb.configfs 1
+    setprop sys.usb.config adb
