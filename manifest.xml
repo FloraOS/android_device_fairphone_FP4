@@ -26,7 +26,20 @@ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <manifest version="1.0" type="device" target-level="5">
-    <kernel target-level="5"/>
+    <!-- Kernel FCM level 6 (S), not 5 (R), even though the HAL requirements
+         above stay at level 5.
+
+         checkvintf resolves kernel requirements out of kernel/configs/<letter>,
+         and the 4.19 requirements only exist from "s" onwards - kernel/configs/r
+         carries android-5.4 alone. Leaving this at 5 makes the OTA-time VINTF
+         check fail with
+
+           Kernel FCM Version is 5 and kernel version is 4.19.325, but the
+           first kernel FCM version allowed for kernel version 4.19.y is 6
+
+         This 4.19 tree is the S-era Fairphone release, so it is expected to
+         satisfy the level 6 requirements for android-4.19. -->
+    <kernel target-level="6"/>
 
     <!-- AOSP HAL interface services -->
 

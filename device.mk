@@ -52,14 +52,20 @@ PRODUCT_SOONG_NAMESPACES += \
 TARGET_BOARD_PLATFORM := lito
 
 
-# Build only specific images
+# Images to build.
+#
+# Fairphone builds this tree the QSSI way: vendor/odm here, system side from a
+# separate single-system-image build, and the two halves merged afterwards. This
+# is a plain AOSP tree with no second half to merge, so every partition that
+# goes into the super image has to be built right here, otherwise the OTA
+# payload would carry a vendor image and nothing to run it under.
 PRODUCT_BUILD_BOOT_IMAGE := true
 PRODUCT_BUILD_ODM_IMAGE := true
-PRODUCT_BUILD_PRODUCT_IMAGE := false
+PRODUCT_BUILD_PRODUCT_IMAGE := true
 PRODUCT_BUILD_RAMDISK_IMAGE := true
 PRODUCT_BUILD_RECOVERY_IMAGE := true
-PRODUCT_BUILD_SYSTEM_EXT_IMAGE := false
-PRODUCT_BUILD_SYSTEM_IMAGE := false
+PRODUCT_BUILD_SYSTEM_EXT_IMAGE := true
+PRODUCT_BUILD_SYSTEM_IMAGE := true
 PRODUCT_BUILD_USERDATA_IMAGE := false
 PRODUCT_BUILD_VENDOR_IMAGE := true
 
@@ -86,9 +92,11 @@ BOOT_SECURITY_PATCH := $(PLATFORM_SECURITY_PATCH)
 VENDOR_SECURITY_PATCH := $(PLATFORM_SECURITY_PATCH)
 
 
-# Also, there is no need to build an OTA package as this will be done later
-# when we combine this system build with the non-system images.
-TARGET_SKIP_OTA_PACKAGE := true
+# OTA packaging stays on. Upstream disabled it because this tree only produced
+# the non-system half of the device and the OTA was assembled later from the
+# merged target files; here the build is already complete, so let
+# build/make/core/Makefile emit the full OTA (and let `m strawberry` wrap it).
+TARGET_SKIP_OTA_PACKAGE := false
 
 
 # Atrace

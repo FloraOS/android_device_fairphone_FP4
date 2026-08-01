@@ -27,7 +27,12 @@ AB_OTA_PARTITIONS += \
     boot \
     dtbo \
     odm \
+    product \
     recovery \
+    system \
+    system_ext \
+    vbmeta \
+    vbmeta_system \
     vendor
 
 # Firmware partitions that must never be shipped inside an OTA ZIP.
@@ -89,8 +94,10 @@ BUILD_BROKEN_USES_BUILD_HOST_STATIC_LIBRARY := true
 endif
 
 
-# Chain partition for system
-BOARD_AVB_VBMETA_SYSTEM := system
+# Chain partition for the system-side images. All three live in the same chained
+# vbmeta_system descriptor so a system-only OTA can re-sign them without
+# touching the top level vbmeta that the bootloader verifies.
+BOARD_AVB_VBMETA_SYSTEM := system system_ext product
 BOARD_AVB_VBMETA_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa4096.pem
 BOARD_AVB_VBMETA_SYSTEM_ALGORITHM := SHA256_RSA4096
 BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
@@ -314,6 +321,20 @@ BOARD_ODMIMAGE_FILE_SYSTEM_TYPE := ext4
 TARGET_COPY_OUT_ODM := odm
 
 
+# Product partition
+BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := ext4
+TARGET_COPY_OUT_PRODUCT := product
+
+
+# System partition
+BOARD_SYSTEMIMAGE_FILE_SYSTEM_TYPE := ext4
+
+
+# System_ext partition
+BOARD_SYSTEM_EXTIMAGE_FILE_SYSTEM_TYPE := ext4
+TARGET_COPY_OUT_SYSTEM_EXT := system_ext
+
+
 # Others
 BOARD_DO_NOT_STRIP_VENDOR_MODULES := true
 BOARD_USES_GENERIC_AUDIO := true
@@ -372,6 +393,9 @@ BOARD_SUPER_PARTITION_SIZE := 6442450944
 
 BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := \
     odm \
+    product \
+    system \
+    system_ext \
     vendor
 
 
