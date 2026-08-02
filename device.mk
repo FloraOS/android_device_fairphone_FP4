@@ -1162,6 +1162,7 @@ PRODUCT_PACKAGES += \
     libqsap_sdk \
     libwifi-hal-qcom \
     libwifi-hal-ctrl \
+    firmware_WCNSS_qcom_cfg.ini_symlink \
     libwfdaac_vendor \
     libwpa_client \
     p2p_supplicant_overlay.conf \

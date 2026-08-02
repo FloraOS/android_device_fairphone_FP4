@@ -49,9 +49,10 @@ LOCAL_MODULE_PATH  := $(TARGET_OUT_VENDOR_ETC)/hostapd
 LOCAL_SRC_FILES    := hostapd.deny
 include $(BUILD_PREBUILT)
 
-#create symbolic links for INI file
-$(shell mkdir -p $(TARGET_OUT_VENDOR)/firmware/wlan/qca_cld; \
-    ln -sf /vendor/etc/wifi/WCNSS_qcom_cfg.ini \
-    $(TARGET_OUT_VENDOR)/firmware/wlan/qca_cld/WCNSS_qcom_cfg.ini )
+# The INI symlink used to be made here with a parse-time $(shell ... ln -sf).
+# It reached the staging directory but never the image, because vendor.img is
+# assembled from the tracked installed-files list and nothing owned that file.
+# It is now the install_symlink module firmware_WCNSS_qcom_cfg.ini_symlink in
+# Android.bp, listed in device.mk.
 
 endif

@@ -1,0 +1,17 @@
+// The qca_cld3 driver loads its INI through request_firmware, i.e. from
+// /vendor/firmware/wlan/qca_cld/, while the file itself is installed to
+// /vendor/etc/wifi/. The two are bridged by a symlink.
+//
+// Android.mk used to do this with a bare
+//   $(shell mkdir -p ...; ln -sf ...)
+// side effect. That runs at Makefile parse time and does land the symlink in
+// the staging directory - but nothing owns it, and vendor.img is assembled from
+// the tracked installed-files list, so it never reached the image. On device
+// /vendor/firmware/wlan/qca_cld/ simply did not exist. install_symlink makes it
+// a real module the build tracks and packages.
+install_symlink {
+    name: "firmware_WCNSS_qcom_cfg.ini_symlink",
+    vendor: true,
+    installed_location: "firmware/wlan/qca_cld/WCNSS_qcom_cfg.ini",
+    symlink_target: "/vendor/etc/wifi/WCNSS_qcom_cfg.ini",
+}
