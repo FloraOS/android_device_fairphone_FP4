@@ -311,6 +311,12 @@ BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
 # stall: a stall still ends in the watchdog dropping the SoC into EDL, which
 # takes minutes and needs a battery pull to get out of.
 BOARD_KERNEL_CMDLINE += androidboot.init_fatal_reboot_target=recovery
+# Run /first_stage.sh from the ramdisk before DoFirstStageMount(), with stdio on
+# /dev/console, and block init until it exits. See rootdir/first_stage.sh: this
+# is the only way to see a first stage failure on this device, because fbcon
+# only takes the panel at ~4.1s and first stage init runs at ~3.9s, so anything
+# fatal there reboots before a single character is readable.
+BOARD_KERNEL_CMDLINE += androidboot.first_stage_console=1
 endif
 
 #Enable dtb in boot image and boot image header version 2 support.

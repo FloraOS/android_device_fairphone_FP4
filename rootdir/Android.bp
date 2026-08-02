@@ -61,6 +61,20 @@ prebuilt_etc {
     vendor: true,
 }
 
+// Second stage boot logger, pulled in from device.mk on eng builds only.
+prebuilt_etc {
+    name: "init.fp4log.rc",
+    src: "etc/init.fp4log.rc",
+    sub_dir: "init",
+    vendor: true,
+}
+
+sh_binary {
+    name: "fp4_kmsglog.sh",
+    src: "etc/fp4_kmsglog.sh",
+    vendor: true,
+}
+
 
 sh_binary {
     name: "init.class_main.sh",

@@ -560,6 +560,45 @@ PRODUCT_PACKAGES += \
 PRODUCT_COPY_FILES += \
     $(FP_PATH)/rootdir/etc/fstab_AB_dynamic_partition.qti:$(TARGET_COPY_OUT_RAMDISK)/fstab.default
 
+# First stage debug hook, eng only.
+#
+# init's StartConsole() runs /first_stage.sh with stdio on /dev/console and
+# blocks until it exits. With console=tty0 that console is the panel, which is
+# the only log this device has: pstore/ramoops does not survive a reset here and
+# the debug UART is not reachable without opening the phone. libcutils'
+# fs_config already carries an explicit 00755 rule for "first_stage.sh", so the
+# script comes out executable in the ramdisk without any extra plumbing.
+#
+# AndroidBoard.mk puts sh and the bootstrap linker next to it, since the script
+# needs an interpreter and the first stage ramdisk only ships static binaries.
+ifneq (,$(filter eng,$(TARGET_BUILD_VARIANT)))
+PRODUCT_COPY_FILES += \
+    $(FP_PATH)/rootdir/first_stage.sh:$(TARGET_COPY_OUT_RAMDISK)/first_stage.sh
+
+# The first stage ramdisk ships init, e2fsck and tune2fs and nothing else, so a
+# debug script there has no ls, cat, mount, dmesg or dd to call. Build the
+# static toybox for AndroidBoard.mk to drop in next to sh; the ordinary
+# /system/bin/toybox is dynamically linked against libcrypto, liblog,
+# libselinux, libz and libm, none of which exist that early.
+PRODUCT_PACKAGES += toybox-static
+
+# Second stage boot logger.
+#
+# The first stage hook above stops at DoFirstStageMount(), because StartConsole()
+# sets SA_NOCLDWAIT and then wait()s until pid 1 has no children left, so nothing
+# it leaves behind can outlive it without parking init inside the hook. This pair
+# covers the other side: an "on early-init" service in /vendor/etc/init that
+# copies dmesg, the property list and /proc/mounts onto the raw userdata
+# partition once a second, from the first thing second stage init runs.
+#
+# first_stage.sh stamps that region NEVER-RAN beforehand, so a stamp that is
+# still intact says second stage init never got to early-init - which is a
+# result in itself, and the one thing the first stage dump cannot tell us.
+PRODUCT_PACKAGES += \
+    fp4_kmsglog.sh \
+    init.fp4log.rc
+endif
+
 PRODUCT_PACKAGES_DEBUG += \
     init.qcom.debug.sh \
     init.qcom.debug-sdm660.sh \

@@ -1,0 +1,20 @@
+# Second stage boot logger, eng builds only. See rootdir/etc/fp4_kmsglog.sh.
+#
+# Only the service lives here. The "start" is in init.target.rc's "on early-init"
+# block instead, because actions run in parse order and everything imported from
+# init.rc - which includes /vendor/etc/init/hw/init.target.rc - is registered
+# before ParseConfig("/vendor/etc/init") reaches this file. init.target.rc's
+# early-init does two blocking "exec"s, and a logger that starts after those sees
+# nothing if one of them hangs. Service definitions are all parsed before any
+# action runs, so the declaration being here and the start being there is fine.
+#
+# The service is deliberately not "critical": if it cannot start, that must not
+# take the boot down, since the whole point is to observe a boot that is already
+# failing. It is also not "oneshot", so init restarts it if the shell dies and
+# logging survives whatever killed it.
+
+service fp4_kmsglog /vendor/bin/sh /vendor/bin/fp4_kmsglog.sh
+    class core
+    user root
+    group root system
+    disabled

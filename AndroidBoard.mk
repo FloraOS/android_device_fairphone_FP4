@@ -134,6 +134,50 @@ ALL_DEFAULT_INSTALLED_MODULES += $(FP4_RECOVERY_TUNE2FS)
 
 
 #----------------------------------------------------------------------
+# Shell in the first stage ramdisk (eng only)
+#----------------------------------------------------------------------
+# rootdir/first_stage.sh needs an interpreter, and the first stage ramdisk only
+# ships static binaries (init, e2fsck, tune2fs), so sh would have nothing to run
+# under. sh is dynamically linked but its only NEEDED entry is libc.so, and the
+# ramdisk already carries system/lib64/{libc,libdl,ld-android}.so - the one
+# missing piece is the interpreter named in its PT_INTERP, /system/bin/linker64.
+#
+# Take the bootstrap linker for that. The installed /system/bin/linker64 is a
+# symlink into /apex/com.android.runtime, which is not mounted this early;
+# /system/bin/bootstrap/linker64 is the real binary that exists precisely for
+# processes that run before the APEXes are up.
+#
+# Both land on paths that the system image's generated fs_config table already
+# describes as 0755, so mkbootfs gives them the right mode.
+ifneq (,$(filter eng,$(TARGET_BUILD_VARIANT)))
+FP4_RAMDISK_SH := $(TARGET_RAMDISK_OUT)/system/bin/sh
+FP4_RAMDISK_LINKER := $(TARGET_RAMDISK_OUT)/system/bin/linker64
+
+$(FP4_RAMDISK_SH): $(TARGET_OUT)/bin/sh
+	@echo "Install: $@"
+	$(hide) mkdir -p $(dir $@)
+	$(hide) cp -f $< $@
+	$(hide) chmod 755 $@
+
+$(FP4_RAMDISK_LINKER): $(TARGET_OUT)/bin/bootstrap/linker64
+	@echo "Install: $@"
+	$(hide) mkdir -p $(dir $@)
+	$(hide) cp -f $< $@
+	$(hide) chmod 755 $@
+
+FP4_RAMDISK_TOYBOX := $(TARGET_RAMDISK_OUT)/system/bin/toybox
+
+$(FP4_RAMDISK_TOYBOX): $(TARGET_OUT)/bin/toybox-static64
+	@echo "Install: $@"
+	$(hide) mkdir -p $(dir $@)
+	$(hide) cp -f $< $@
+	$(hide) chmod 755 $@
+
+ALL_DEFAULT_INSTALLED_MODULES += $(FP4_RAMDISK_SH) $(FP4_RAMDISK_LINKER) $(FP4_RAMDISK_TOYBOX)
+endif
+
+
+#----------------------------------------------------------------------
 # extra images
 #----------------------------------------------------------------------
 include $(FP_PATH)/generate_extra_images.mk
