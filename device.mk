@@ -1032,6 +1032,30 @@ PRODUCT_COPY_FILES += \
 # Enable Dual SIM by default
 PRODUCT_PROPERTY_OVERRIDES += persist.radio.multisim.config=dsds
 
+# Framework-facing telephony configuration.
+#
+# The persist.vendor.radio.* half of the RIL config arrives with the blobs, but
+# nothing set the properties the *framework* reads, and without them the radio
+# never came up: RILC reported radioStateChangedInd radioState 0 forever, both
+# stacks sat at mVoiceRegState=3(POWER_OFF) with airplane mode off, and
+# PhoneConfigurationManager logged NOT_PROVISIONED while SET_PREFERRED_DATA_MODEM
+# failed with error 38 (REQUEST_NOT_SUPPORTED) on a retry loop.
+#
+# active_modems.max_count/sim_slots.count are what tell the framework this is a
+# two-modem device at all - without them it will not provision the second stack,
+# which is what SET_PREFERRED_DATA_MODEM needs. default_network is the preferred
+# network mode per stack; 26 is NT_MODE_LTE_TDSCDMA_CDMA_EVDO_GSM_WCDMA, matching
+# what LineageOS ships for this same hardware.
+#
+# Kept in vendor rather than system_ext (where LineageOS puts the two counts)
+# only because this build folds system_ext into system.img, so vendor keeps the
+# edit-test loop to a vendorimage flash. Move them if they fail to stick.
+PRODUCT_VENDOR_PROPERTIES += \
+    ro.telephony.default_network=26,26 \
+    ro.telephony.sim_slots.count=2 \
+    telephony.active_modems.max_count=2 \
+    telephony.lteOnCdmaDevice=1
+
 # Vendor property to enable advanced network scanning
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.vendor.radio.enableadvancedscan=true
