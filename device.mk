@@ -1057,6 +1057,16 @@ PRODUCT_VENDOR_PROPERTIES += \
     telephony.active_modems.max_count=2 \
     telephony.lteOnCdmaDevice=1
 
+# QCOM data-path configuration. These are the only radio-adjacent properties
+# LineageOS sets on this hardware that this tree did not; diffing their vendor
+# build.prop against ours turned up exactly these three. The RIL brings up a
+# DataModule and a DSDModemEndPoint as part of its startup sequence, so leaving
+# its data mode unconfigured is not obviously harmless.
+PRODUCT_VENDOR_PROPERTIES += \
+    persist.vendor.data.iwlan.enable=true \
+    persist.vendor.data.mode=concurrent \
+    persist.vendor.data.profile_update=true
+
 # Vendor property to enable advanced network scanning
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.vendor.radio.enableadvancedscan=true
