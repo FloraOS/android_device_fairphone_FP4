@@ -34,6 +34,10 @@ $(call inherit-product-if-exists, $(QCPATH)/common/config/device-vendor.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_base_telephony.mk)
 
+
+# FloraOS features
+include vendor/f104a/features/telephony_base.mk
+
 # API level the device was shipped
 PRODUCT_SHIPPING_API_LEVEL := 30
 SHIPPING_API_LEVEL := 30
@@ -329,6 +333,40 @@ PRODUCT_PACKAGES += \
     vendor.qti.hardware.camera.device@1.0 \
     vendor.qti.hardware.camera.postproc@1.0 \
     vendor.qti.hardware.camera.postproc@1.0.vendor
+
+# CamX sensor module, tuning and face-detect data, installed under their real
+# .bin names.
+#
+# These are data blobs, but get_blobs.py generated cc_prebuilt_library_shared
+# modules for them in fp4-proprietary/Android.bp, and a cc module always installs
+# as <name>.so. So the sources - which really are called *.bin - landed in
+# /vendor/lib64/camera as *.so, and CamX, which globs for *.bin, counted zero of
+# them: "CreateAllSensorModuleSetManagers() Invalid fileCount", then a null
+# deref in HwEnvironment::InitCaps() that crash-looped the whole camera HAL.
+#
+# Copied by path because a cc module cannot be made to install a .bin, and
+# fp4-proprietary is generated, so fixing the module type there would be undone
+# on the next blob extraction. The bogus .so copies still ship and are simply
+# unused. This is exactly the set LineageOS 23.2 installs for this device.
+#
+# PRODUCT_COPY_FILES is expanded immediately, so the blob path has to be settled
+# here rather than at the bottom of this file where it is otherwise defined.
+ifeq ($(FP4_PROPRIETARY_PATH),)
+FP4_PROPRIETARY_PATH := device/fairphone/fp4-proprietary
+endif
+
+PRODUCT_COPY_FILES += \
+    $(FP4_PROPRIETARY_PATH)/vendor/lib64/camera/com.qti.sensormodule.imx576.bin:$(TARGET_COPY_OUT_VENDOR)/lib64/camera/com.qti.sensormodule.imx576.bin \
+    $(FP4_PROPRIETARY_PATH)/vendor/lib64/camera/com.qti.sensormodule.imx582.bin:$(TARGET_COPY_OUT_VENDOR)/lib64/camera/com.qti.sensormodule.imx582.bin \
+    $(FP4_PROPRIETARY_PATH)/vendor/lib64/camera/com.qti.sensormodule.imx582_sma.bin:$(TARGET_COPY_OUT_VENDOR)/lib64/camera/com.qti.sensormodule.imx582_sma.bin \
+    $(FP4_PROPRIETARY_PATH)/vendor/lib64/camera/com.qti.tuned.sunny_imx576_fp4.bin:$(TARGET_COPY_OUT_VENDOR)/lib64/camera/com.qti.tuned.sunny_imx576_fp4.bin \
+    $(FP4_PROPRIETARY_PATH)/vendor/lib64/camera/com.qti.tuned.tsp_imx582.bin:$(TARGET_COPY_OUT_VENDOR)/lib64/camera/com.qti.tuned.tsp_imx582.bin \
+    $(FP4_PROPRIETARY_PATH)/vendor/lib64/camera/com.qti.tuned.tsp_imx582_sma.bin:$(TARGET_COPY_OUT_VENDOR)/lib64/camera/com.qti.tuned.tsp_imx582_sma.bin \
+    $(FP4_PROPRIETARY_PATH)/vendor/lib64/camera/com.qti.tuned.tsp_imx582_sma_2nd.bin:$(TARGET_COPY_OUT_VENDOR)/lib64/camera/com.qti.tuned.tsp_imx582_sma_2nd.bin \
+    $(FP4_PROPRIETARY_PATH)/vendor/lib64/camera/fdconfigpreview.bin:$(TARGET_COPY_OUT_VENDOR)/lib64/camera/fdconfigpreview.bin \
+    $(FP4_PROPRIETARY_PATH)/vendor/lib64/camera/fdconfigpreviewlite.bin:$(TARGET_COPY_OUT_VENDOR)/lib64/camera/fdconfigpreviewlite.bin \
+    $(FP4_PROPRIETARY_PATH)/vendor/lib64/camera/fdconfigvideo.bin:$(TARGET_COPY_OUT_VENDOR)/lib64/camera/fdconfigvideo.bin \
+    $(FP4_PROPRIETARY_PATH)/vendor/lib64/camera/fdconfigvideolite.bin:$(TARGET_COPY_OUT_VENDOR)/lib64/camera/fdconfigvideolite.bin
 
 # Feature flags for camera
 PRODUCT_COPY_FILES += \
@@ -1191,6 +1229,13 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.wifi.direct.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.direct.xml \
     frameworks/native/data/etc/android.hardware.wifi.passpoint.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.passpoint.xml
 
+
+# Remote File System symlinks under /vendor/rfs, the tree tftp_server serves the
+# modem and DSP subsystems from. fp4-proprietary's tftp/Android.mk creates them
+# as untracked staging artifacts, so they never reached vendor.img and the modem
+# could not read its MCFG or wlanmdsp.mbn - see rfs/Android.bp.
+PRODUCT_PACKAGES += \
+    fp4_rfs_symlinks
 
 # Updater for sideload in recovery
 PRODUCT_PACKAGES += \
