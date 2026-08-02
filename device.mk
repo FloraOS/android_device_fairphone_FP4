@@ -118,6 +118,12 @@ PRODUCT_PACKAGES += \
     FP4FrameworksResOverlay
 
 
+# Launcher3 resource overlay: the shipped home screen is the hotseat and
+# nothing else. See overlay/FP4Launcher3Overlay.
+PRODUCT_PACKAGES += \
+    FP4Launcher3Overlay
+
+
 # Legacy protobuf for the QCOM blobs.
 #
 # 20 blobs - the RIL, the whole sensors stack, camera and the NN HAL - carry a
@@ -1236,6 +1242,26 @@ PRODUCT_COPY_FILES += \
 # could not read its MCFG or wlanmdsp.mbn - see rfs/Android.bp.
 PRODUCT_PACKAGES += \
     fp4_rfs_symlinks
+
+# <library> declarations for the two QTI telephony jars, without which call audio
+# does not work at all.
+#
+# QtiTelephonyService has `uses-library qti-telephony-hidl-wrapper`, and Android
+# refuses to start the components of an app whose uses-library cannot be
+# resolved - so the app sat there holding a persistent process, logging nothing.
+# It is the client of qcrild's vendor.qti.hardware.radio.am@1.0::IQcRilAudio and
+# the only thing that forwards call state to the audio HAL as
+# setParameters(vsid=..;call_state=..). Without it voice_start_call never runs
+# and calls are silent in both directions.
+#
+# The jars themselves come from vendor/fairphone/FP4-system_ext (see gen_se.py
+# for why qti-telephony-hidl-wrapper has to be a prebuilt: its source in
+# vendor/codeaurora/commonsys/telephony statically links
+# android.hidl.manager-V1.0-java, which Android 16 no longer has). These two XML
+# modules are the buildable half and come straight from that source.
+PRODUCT_PACKAGES += \
+    qti_telephony_hidl_wrapper.xml \
+    qti_telephony_utils.xml
 
 # Updater for sideload in recovery
 PRODUCT_PACKAGES += \
