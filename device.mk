@@ -108,6 +108,31 @@ VENDOR_SECURITY_PATCH := $(PLATFORM_SECURITY_PATCH)
 TARGET_SKIP_OTA_PACKAGE := false
 
 
+# Framework resource overlay: navigation bar, camera cutout, status bar height.
+# See overlay/FP4FrameworksResOverlay for why each value is what it is.
+PRODUCT_PACKAGES += \
+    FP4FrameworksResOverlay
+
+
+# Legacy protobuf for the QCOM blobs.
+#
+# 20 blobs - the RIL, the whole sensors stack, camera and the NN HAL - carry a
+# DT_NEEDED on libprotobuf-cpp-{full,lite}-3.9.1.so. That was a versioned VNDK
+# library AOSP shipped itself back in Android 11/12; external/protobuf here is
+# 4.25.8 and only builds the unversioned name, so without these every one of
+# those services dies at load with "CANNOT LINK EXECUTABLE ... not found" and
+# the device comes up with no modem, no sensors, no camera and no NN.
+#
+# These prebuilts already sit in prebuilts/misc/protobuf_vendorcompat for
+# exactly this purpose ("Workaround for Qualcomm prebuilts used by partners");
+# they just install nothing unless named here. Their `stem` makes them land as
+# the 3.9.1 sonames the blobs actually ask for. Newer blobs do not help - the
+# Android 15 set LineageOS ships has the same dependency.
+PRODUCT_PACKAGES += \
+    libprotobuf-cpp-full-3.9.1-vendorcompat \
+    libprotobuf-cpp-lite-3.9.1-vendorcompat
+
+
 # Atrace
 PRODUCT_PACKAGES += \
     android.hardware.atrace@1.0-service
@@ -1112,6 +1137,7 @@ PRODUCT_PACKAGES += \
     libnl \
     libqsap_sdk \
     libwifi-hal-qcom \
+    libwifi-hal-ctrl \
     libwfdaac_vendor \
     libwpa_client \
     p2p_supplicant_overlay.conf \

@@ -1,0 +1,8 @@
+// Device framework resource overlay for the FP4.
+//
+// vendor: true installs it to /vendor/overlay, so changing these values only
+// needs `m vendorimage` - framework-res itself is untouched.
+runtime_resource_overlay {
+    name: "FP4FrameworksResOverlay",
+    vendor: true,
+}

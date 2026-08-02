@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The FP4 has no capacitive or physical navigation keys, so the framework
+         must draw the navigation bar itself. frameworks/base defaults this to
+         false, which is only correct for devices that do have keys; with it
+         unset no navigation bar appeared at all and "dumpsys window displays"
+         reported app=1080x2340, the full panel, with no decor reserved. -->
+    <bool name="config_showNavigationBar">true</bool>
+
+    <!-- Punch-hole front camera: 200px wide by 81px tall, top-centre. The path
+         is in pixels and x is relative to the centre of the display. This must
+         agree with status_bar_height_portrait in dimens.xml, or the status bar
+         is shorter than the hole and its contents are clipped by it. -->
+    <string name="config_mainBuiltInDisplayCutout" translatable="false">
+        M -100 0
+        L -100 81
+        L 100 81
+        L 100 0
+        Z
+    </string>
+</resources>

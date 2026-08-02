@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.fairphone.fp4.overlay.frameworks">
+
+    <!-- isStatic so it is always on and cannot be toggled off at runtime: these
+         are panel geometry facts, not a user preference. -->
+    <overlay
+        android:isStatic="true"
+        android:priority="250"
+        android:targetPackage="android" />
+</manifest>

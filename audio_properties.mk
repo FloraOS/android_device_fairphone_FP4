@@ -170,6 +170,18 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.vendor.bt.aac_vbr_frm_ctl.enabled=true
 
 # Non-Generic ODM varient related
+#
+# ssrec.enable is deliberately false. It gates whether the HAL calls into
+# libssrec.so, and the only libssrec on this build is the stock prebuilt: the
+# source module in hardware/qcom/audio is behind AUDIO_FEATURE_ENABLED_SSR,
+# which BoardConfig.mk only sets under $(QCPATH), so the prebuilt (declared
+# prefer: true) is what ships. That blob was compiled against the FP4's
+# original struct stream_in, so get_device_types(&in->device_list) reads at the
+# wrong offset and segfaults the audio HAL on every openInputStream. Leaving it
+# true contradicted AUDIO_FEATURE_ENABLED_SSR := false and
+# ro.vendor.audio.sdk.ssr=false anyway; QCOM's own lito.mk base block agrees.
+# To actually get surround-sound record, build libssrec from source instead of
+# turning this back on.
 PRODUCT_ODM_PROPERTIES += \
     vendor.audio.feature.a2dp_offload.enable=true \
     vendor.audio.feature.afe_proxy.enable=true \
@@ -204,7 +216,7 @@ PRODUCT_ODM_PROPERTIES += \
     vendor.audio.feature.record_play_concurency.enable=false \
     vendor.audio.feature.src_trkn.enable=true \
     vendor.audio.feature.spkr_prot.enable=true \
-    vendor.audio.feature.ssrec.enable=true \
+    vendor.audio.feature.ssrec.enable=false \
     vendor.audio.feature.usb_offload.enable=true \
     vendor.audio.feature.usb_offload_burst_mode.enable=true \
     vendor.audio.feature.usb_offload_sidetone_volume.enable=false \

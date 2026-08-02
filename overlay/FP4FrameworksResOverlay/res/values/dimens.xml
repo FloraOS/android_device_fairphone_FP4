@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Content inset from the panel's rounded corners. -->
+    <dimen name="rounded_corner_content_padding">14dp</dimen>
+
+    <!-- The status bar has to be at least as tall as the 81px camera cutout.
+         The framework default of 28dp is only 73.5px at this panel's 420dpi, so
+         the bar ended up shorter than the hole and the clock was clipped by it.
+         Specified in px deliberately - it is tracking a physical feature of the
+         panel, so it must not scale with density. -->
+    <dimen name="status_bar_height_default">28dp</dimen>
+    <dimen name="status_bar_height_portrait">81px</dimen>
+    <dimen name="status_bar_height_landscape">28dp</dimen>
+</resources>
