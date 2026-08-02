@@ -7,14 +7,15 @@
 # needs the phone opened; fbcon only takes the panel after the interesting
 # part of boot is over; and /data never gets mounted, so there is no tombstone
 # and no logcat to collect. The one channel that works is writing straight at
-# the raw userdata partition and reading it back from recovery with dd, which
-# is why userdata is treated as a scratch log area on this build.
+# the rawdump partition and reading it back from recovery with dd, which
+# is why rawdump is used: 8.2 GiB of download-mode scratch that nothing else
+# writes, so unlike userdata it can be logged onto without destroying /data.
 #
 # init.target.rc starts this from the top of its "on early-init" block, ahead
 # of the blocking modprobe of the audio DLKMs, so that a hang in that modprobe
 # is observed rather than merely inferred.
 #
-# Layout of the raw userdata partition on an eng build:
+# Layout of the rawdump partition on an eng build:
 #
 #     0 MiB   FP4DBG1   first_stage.sh, one shot, pre-DoFirstStageMount
 #    64 MiB   FP4DBG2   context: properties, mounts, process list, init state.
@@ -40,9 +41,8 @@
 #    ~300 kB write, and runs five times a second.
 #
 MAGIC=FP4DBG2
-UD=/dev/block/by-name/userdata
+UD=/dev/block/by-name/rawdump
 
-[ -e "$UD" ] || UD=/dev/block/sda11
 [ -e "$UD" ] || exit 0
 
 # One-shot context sample. What pid 1 is doing matters most: init runs "exec"
@@ -84,6 +84,14 @@ while [ $i -lt 6000 ]; do
         echo "uptime        : $(cat /proc/uptime)"
         echo "init wchan    : $(cat /proc/1/wchan 2>/dev/null)"
         echo ""
+        # Deliberately no getprop in this loop. getprop opens every
+        # /dev/__properties__/u:object_r:*_prop:s0 file, and this shell runs as
+        # vendor_qti_init_shell, which is not allowed most of them - so under
+        # permissive each pass emits hundreds of avc denials. At five passes a
+        # second that overruns the kernel audit backlog (audit_backlog_limit is
+        # 64 here), audit starts dropping and blocking, and the boot dies at
+        # ~18s instead of getting where it was going. The one-shot context
+        # sample above already has the full property list.
         echo "--- dmesg"
         dmesg
         echo "$MAGIC-END"

@@ -311,12 +311,34 @@ BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
 # stall: a stall still ends in the watchdog dropping the SoC into EDL, which
 # takes minutes and needs a battery pull to get out of.
 BOARD_KERNEL_CMDLINE += androidboot.init_fatal_reboot_target=recovery
+#
+# The raw-userdata boot logger, off by default.
+#
+# This device has no post-mortem log of any kind - pstore/ramoops does not
+# survive a reset, the debug UART is not reachable without opening the phone,
+# and fbcon only takes the panel long after the interesting part of boot - so
+# the only channel that works is writing straight at the userdata partition and
+# reading it back from recovery with dd. That obviously destroys the filesystem
+# on /data, which makes it a bringup tool and nothing else: leave it on and the
+# boot gets all the way to "mount_all --late", fails to mount /data, and drops
+# into recovery with "Can't load Android system. Your data may be corrupt."
+#
+# Turn it on for a boot that dies before adb, with:
+#
+#     make FP4_BOOT_LOGGER=true ...
+#
+# then read the regions back from recovery - see rootdir/first_stage.sh for the
+# layout - and wipe /data afterwards.
+# FP4_BOOT_LOGGER itself is defined in device.mk - product config is evaluated
+# before board config, so it has to be set there to be visible to both.
+ifeq ($(FP4_BOOT_LOGGER),true)
 # Run /first_stage.sh from the ramdisk before DoFirstStageMount(), with stdio on
 # /dev/console, and block init until it exits. See rootdir/first_stage.sh: this
 # is the only way to see a first stage failure on this device, because fbcon
 # only takes the panel at ~4.1s and first stage init runs at ~3.9s, so anything
 # fatal there reboots before a single character is readable.
 BOARD_KERNEL_CMDLINE += androidboot.first_stage_console=1
+endif
 endif
 
 #Enable dtb in boot image and boot image header version 2 support.

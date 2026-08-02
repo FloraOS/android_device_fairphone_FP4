@@ -5,19 +5,17 @@
 # until it exits. It runs after DoCreateDevices() - so the dm-linear mappings
 # for the logical partitions already exist - but before DoFirstStageMount().
 #
-# Everything is written to the raw userdata partition and read back from
+# Everything is written to the raw rawdump partition and read back from
 # recovery with dd. This device has no other log: pstore/ramoops does not
 # survive a reset, the debug UART needs the phone opened, and although fbcon
 # binds to fb0, cont_splash keeps owning the scanout so console text is painted
 # into a buffer that is never displayed.
 #
-# This destroys the filesystem on userdata, which was explicitly sanctioned.
-#
-# Layout of the raw userdata partition on an eng build:
+# Layout of the raw rawdump partition on an eng build:
 #
 #     0 MiB    FP4DBG1   this script, one shot, pre-DoFirstStageMount
 #    64 MiB    FP4DBG2   /vendor/bin/fp4_kmsglog.sh, second stage onwards,
-#    ..88 MiB            rotating over a four slot ring
+#    ..88 MiB            rotating over a three slot ring
 #
 # The FP4DBG2 region is stamped NEVER-RAN here, so finding the stamp intact is
 # itself a result: it means second stage init never reached "on early-init".
@@ -57,16 +55,36 @@
 MAGIC=FP4DBG1
 TB=/system/bin/toybox
 
+# Find the log partition.
+#
+# rawdump, not userdata. rawdump is 8.2 GiB of scratch that only QCOM's
+# download-mode ramdump path ever writes, and download mode is not armed here,
+# so using it costs nothing - whereas logging onto userdata destroys the
+# filesystem on /data, and a build that cannot mount /data never finishes
+# booting no matter what else is fixed.
+#
+# First stage init only creates the block devices it needs for the mount itself
+# - super, metadata and the AVB partitions - so /dev/block/by-name/rawdump does
+# not exist yet. Walk sysfs for the partition whose PARTNAME matches and mknod
+# it, rather than hardcoding a partition number.
 UD=
-for cand in /dev/block/by-name/userdata /dev/block/sda11; do
-    [ -e "$cand" ] && { UD=$cand; break; }
-done
+[ -e /dev/block/by-name/rawdump ] && UD=/dev/block/by-name/rawdump
 if [ -z "$UD" ] && [ -x "$TB" ]; then
-    while read -r maj min blocks name; do
-        if [ "$name" = "sda11" ]; then
-            $TB mknod /dev/fp4_ud b "$maj" "$min" 2>/dev/null && UD=/dev/fp4_ud
+    for u in /sys/block/sd*/sd*/uevent; do
+        [ -e "$u" ] || continue
+        pn=; maj=; min=
+        while read -r l; do
+            case "$l" in
+                PARTNAME=*) pn=${l#*=} ;;
+                MAJOR=*) maj=${l#*=} ;;
+                MINOR=*) min=${l#*=} ;;
+            esac
+        done < "$u"
+        if [ "$pn" = "rawdump" ] && [ -n "$maj" ] && [ -n "$min" ]; then
+            $TB mknod /dev/fp4_log b "$maj" "$min" 2>/dev/null && UD=/dev/fp4_log
+            break
         fi
-    done < /proc/partitions
+    done
 fi
 [ -z "$UD" ] && exit 0
 
@@ -144,7 +162,7 @@ static=$(
     echo "$MAGIC"
     echo "slot_suffix   : [$slot]"
     echo "rm sh         : $rmres"
-    echo "log device    : $UD (FP4DBG2 ring at 64/72/80/88 MiB)"
+    echo "log device    : $UD (rawdump; FP4DBG2 ring at 64/72/80/88 MiB)"
     echo ""
     echo "$static"
     echo ""

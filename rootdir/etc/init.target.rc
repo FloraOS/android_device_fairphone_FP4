@@ -43,7 +43,7 @@
 #
 # The property condition keeps this off user builds, where neither the service
 # nor the script is installed.
-on early-init && property:ro.debuggable=1
+on early-init && property:ro.vendor.fp4.bootlog=1
     start fp4_kmsglog
 
 on early-init

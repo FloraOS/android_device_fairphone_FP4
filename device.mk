@@ -3,6 +3,15 @@
 
 FP_PATH := device/fairphone/FP4
 
+# The raw-rawdump boot logger, off by default. See BoardConfig.mk for what it is
+# and rootdir/first_stage.sh for the on-disk layout.
+#
+# Defined here rather than in BoardConfig.mk because product config is evaluated
+# before board config: a variable set in BoardConfig.mk is not visible to this
+# file, so the guards below would silently never fire. This way both halves see
+# it, since board config runs later in the same pass.
+FP4_BOOT_LOGGER ?= true
+
 
 # Call the vendor setup
 $(call inherit-product-if-exists, vendor/fairphone/fp4/device-vendor.mk)
@@ -416,6 +425,77 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PACKAGES += tune2fs_ramdisk
 
 
+# Vendor variants of the AOSP interface and utility libraries that the prebuilt
+# vendor blobs link against.
+#
+# Soong builds a vendor variant of each of these, but nothing referenced them,
+# so only the core variants were installed - to /system/lib64, which a vendor
+# process cannot link against. Nothing pulled them in implicitly either: the
+# HALs and daemons that need them are prebuilt blobs, and BoardConfig.mk sets
+# BUILD_BROKEN_PREBUILT_ELF_FILES, so Soong never sees their ELF dependencies
+# and cannot work out that they are required.
+#
+# Every one of these was a hard "CANNOT LINK EXECUTABLE ... not found" at boot.
+# keymaster/gatekeeper were the fatal pair - both HALs died in the linker, init
+# respawned them every 5s forever, vold blocked on keystore, /data was never set
+# up and the boot stopped at the splash. The rest cost telephony (qcrild),
+# bluetooth, sensors, NN, DRM, codec2 and netmgrd.
+#
+# The ".vendor" suffix is what selects the vendor variant of a vendor_available
+# Soong library; the bare name installs the core variant to /system and changes
+# nothing. Derived by diffing /vendor/lib{,64} against a known-good LineageOS
+# 23.2 build for this device.
+PRODUCT_PACKAGES += \
+    android.frameworks.sensorservice@1.0.vendor \
+    android.hardware.bluetooth@1.0.vendor \
+    android.hardware.drm@1.0.vendor \
+    android.hardware.drm@1.1.vendor \
+    android.hardware.drm@1.2.vendor \
+    android.hardware.drm@1.3.vendor \
+    android.hardware.gatekeeper@1.0.vendor \
+    android.hardware.health-V4-ndk.vendor \
+    android.hardware.keymaster@3.0.vendor \
+    android.hardware.keymaster@4.0.vendor \
+    android.hardware.keymaster@4.1.vendor \
+    android.hardware.memtrack-V1-ndk.vendor \
+    android.hardware.neuralnetworks@1.0.vendor \
+    android.hardware.neuralnetworks@1.1.vendor \
+    android.hardware.neuralnetworks@1.2.vendor \
+    android.hardware.neuralnetworks@1.3.vendor \
+    android.hardware.nfc-V1-ndk.vendor \
+    android.hardware.power-V1-ndk.vendor \
+    android.hardware.power-V6-ndk.vendor \
+    android.hardware.radio@1.2.vendor \
+    android.hardware.radio@1.3.vendor \
+    android.hardware.radio@1.4.vendor \
+    android.hardware.radio@1.5.vendor \
+    android.hardware.radio.config@1.0.vendor \
+    android.hardware.radio.config@1.1.vendor \
+    android.hardware.radio.config@1.2.vendor \
+    android.hardware.radio.deprecated@1.0.vendor \
+    android.hardware.secure_element@1.0.vendor \
+    android.hardware.secure_element@1.1.vendor \
+    android.hardware.secure_element@1.2.vendor \
+    android.hardware.security.keymint-V1-ndk.vendor \
+    android.hardware.security.secureclock-V1-ndk.vendor \
+    android.hardware.tetheroffload.control@1.1.vendor \
+    android.hardware.thermal-V1-ndk.vendor \
+    android.hardware.usb.gadget@1.0.vendor \
+    android.hardware.usb.gadget@1.1.vendor \
+    android.hardware.usb.gadget-V1-ndk.vendor \
+    android.hardware.usb-V1-ndk.vendor \
+    android.hardware.vibrator-V2-ndk.vendor \
+    android.system.keystore2-V1-ndk.vendor \
+    android.system.net.netd@1.0.vendor \
+    android.system.net.netd@1.1.vendor \
+    libcurl.vendor \
+    libjsoncpp.vendor \
+    libpng.vendor \
+    libsqlite.vendor \
+    libssl.vendor \
+    libsysutils.vendor
+
+
 # Fastbootd
 PRODUCT_PACKAGES += fastbootd
 # Add default implementation of fastboot HAL.
@@ -571,6 +651,10 @@ PRODUCT_COPY_FILES += \
 #
 # AndroidBoard.mk puts sh and the bootstrap linker next to it, since the script
 # needs an interpreter and the first stage ramdisk only ships static binaries.
+# Gated on FP4_BOOT_LOGGER, which defaults to false in BoardConfig.mk: the whole
+# apparatus writes raw over the userdata partition, so a build with it enabled
+# cannot mount /data and always ends in recovery.
+ifeq ($(FP4_BOOT_LOGGER),true)
 ifneq (,$(filter eng,$(TARGET_BUILD_VARIANT)))
 PRODUCT_COPY_FILES += \
     $(FP_PATH)/rootdir/first_stage.sh:$(TARGET_COPY_OUT_RAMDISK)/first_stage.sh
@@ -597,6 +681,13 @@ PRODUCT_PACKAGES += toybox-static
 PRODUCT_PACKAGES += \
     fp4_kmsglog.sh \
     init.fp4log.rc
+
+# init.target.rc's "on early-init" starts the logger on this property rather
+# than on ro.debuggable, so that a normal eng build - which does not install the
+# service - does not have init complain about starting something that is not
+# there.
+PRODUCT_VENDOR_PROPERTIES += ro.vendor.fp4.bootlog=1
+endif
 endif
 
 PRODUCT_PACKAGES_DEBUG += \
