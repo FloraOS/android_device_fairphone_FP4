@@ -1246,6 +1246,16 @@ endif
 # Call this in the end so that flags if required can be utilized.
 $(call inherit-product, $(FP4_PROPRIETARY_PATH)/device-vendor.mk)
 
+# QTI telephony components that live on system_ext.
+#
+# Fairphone's official blob package (get_blobs.py) ships vendor/ only - it has
+# no system_ext content at all - so QtiTelephonyService, qcrilmsgtunnel,
+# qcrilhook, the QTI IMS stack and DPM were simply absent from this build.
+# LineageOS extracts them from the stock image and ships all of it; comparing a
+# working LineageOS 23.2 build for this device against ours, they were the last
+# remaining difference in telephony packaging.
+$(call inherit-product-if-exists, vendor/fairphone/FP4-system_ext/FP4-system_ext.mk)
+
 
 # Build some more display components to vendor
 $(call inherit-product, vendor/qcom/opensource/commonsys-intf/display/config/display-interfaces-product.mk)
