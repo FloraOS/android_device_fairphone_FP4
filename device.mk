@@ -472,31 +472,22 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.sys.sf.color_mode=0
 
 
-# Run the QTI display composer HAL on Scudo instead of hardened_malloc.
+# No hardened_malloc override for the display composer HAL here.
 #
-# hardened_malloc's WRITE_AFTER_FREE_CHECK catches a real write-after-free
-# inside vendor.qti.hardware.display.composer-service and calls fatal_error(),
-# which kills the HAL, takes surfaceflinger down with it and bootloops the
-# device. The bug is in the closed vendor blob, so there is nothing to fix on
-# our side; GrapheneOS never hits it because Pixels do not run this HAL.
+# The HAL has a write-after-free that hardened_malloc's WRITE_AFTER_FREE_CHECK
+# catches, aborting it and taking surfaceflinger with it. That is handled in
+# bionic's libc_init_dynamic.cpp init_prog_id(), which matches the executable
+# path directly, the same way GrapheneOS handles the Pixel camera HAL.
 #
-# bionic's libc_init_dynamic.cpp honours this per-process override only on a
-# debuggable build and only for programs under /vendor/, which this is. The
-# suffix is the executable's basename, not the truncated 15-char comm name that
-# shows up in logcat as "composer-servic".
-#
-# Setting it here works, but only because the composer HAL starts early: init
-# applies this value from build.prop, and system_server's
-# SettingsToPropertiesMapper later resyncs the whole persist.device_config.*
-# namespace from the settings DB and blanks anything with no flag behind it, so
-# `getprop` on a booted device shows it empty. Measured on FP4, composer starts
-# ~7s before system_server, so it has long since read the value by then.
-#
-# To make it stick for the whole uptime as well, set the backing flag:
-#   device_config put memory_safety_native \
-#     hardened_malloc.mode_override.process.vendor.qti.hardware.display.composer-service disabled
-PRODUCT_PROPERTY_OVERRIDES += \
-    persist.device_config.memory_safety_native.hardened_malloc.mode_override.process.vendor.qti.hardware.display.composer-service=disabled
+# It deliberately is NOT done with the
+# persist.device_config.memory_safety_native.hardened_malloc.mode_override.*
+# property: that namespace is resynced from the settings DB by system_server's
+# SettingsToPropertiesMapper, which blanks any value with no flag behind it.
+# Setting it in build.prop only covers processes that start before
+# system_server. The composer HAL does - but it also restarts later, and one
+# such restart with the property already blanked is enough to abort, kill
+# surfaceflinger and stall the boot on a black screen (seen here 119 times in
+# one boot).
 
 
 # Display Properties
