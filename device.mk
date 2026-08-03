@@ -12,6 +12,11 @@ FP_PATH := device/fairphone/FP4
 # it, since board config runs later in the same pass.
 FP4_BOOT_LOGGER ?= true
 
+# The second stage kmsg logger is gated separately and defaults off - it runs
+# for the whole uptime rather than just across first stage. See the block that
+# installs fp4_kmsglog.sh further down.
+FP4_KMSGLOG ?= false
+
 
 # Call the vendor setup
 $(call inherit-product-if-exists, vendor/fairphone/fp4/device-vendor.mk)
@@ -35,8 +40,15 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_base_telephony.mk)
 
 
+# FloraOS content common to every build
+include vendor/f104a/common.mk
+
 # FloraOS features
 include vendor/f104a/features/telephony_base.mk
+include vendor/f104a/features/gmscompat.mk
+# FP4 has an eSIM, and android.hardware.telephony.euicc.xml is already copied in
+# below, so ship the LPA that actually drives it.
+include vendor/f104a/features/euicc.mk
 
 # API level the device was shipped
 PRODUCT_SHIPPING_API_LEVEL := 30
@@ -460,6 +472,33 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.sys.sf.color_mode=0
 
 
+# Run the QTI display composer HAL on Scudo instead of hardened_malloc.
+#
+# hardened_malloc's WRITE_AFTER_FREE_CHECK catches a real write-after-free
+# inside vendor.qti.hardware.display.composer-service and calls fatal_error(),
+# which kills the HAL, takes surfaceflinger down with it and bootloops the
+# device. The bug is in the closed vendor blob, so there is nothing to fix on
+# our side; GrapheneOS never hits it because Pixels do not run this HAL.
+#
+# bionic's libc_init_dynamic.cpp honours this per-process override only on a
+# debuggable build and only for programs under /vendor/, which this is. The
+# suffix is the executable's basename, not the truncated 15-char comm name that
+# shows up in logcat as "composer-servic".
+#
+# Setting it here works, but only because the composer HAL starts early: init
+# applies this value from build.prop, and system_server's
+# SettingsToPropertiesMapper later resyncs the whole persist.device_config.*
+# namespace from the settings DB and blanks anything with no flag behind it, so
+# `getprop` on a booted device shows it empty. Measured on FP4, composer starts
+# ~7s before system_server, so it has long since read the value by then.
+#
+# To make it stick for the whole uptime as well, set the backing flag:
+#   device_config put memory_safety_native \
+#     hardened_malloc.mode_override.process.vendor.qti.hardware.display.composer-service disabled
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.device_config.memory_safety_native.hardened_malloc.mode_override.process.vendor.qti.hardware.display.composer-service=disabled
+
+
 # Display Properties
 PRODUCT_AAPT_CONFIG := normal
 PRODUCT_AAPT_PREF_CONFIG := xxhdpi
@@ -735,7 +774,7 @@ PRODUCT_COPY_FILES += \
 # libselinux, libz and libm, none of which exist that early.
 PRODUCT_PACKAGES += toybox-static
 
-# Second stage boot logger.
+# Second stage boot logger, off by default (FP4_KMSGLOG).
 #
 # The first stage hook above stops at DoFirstStageMount(), because StartConsole()
 # sets SA_NOCLDWAIT and then wait()s until pid 1 has no children left, so nothing
@@ -747,6 +786,15 @@ PRODUCT_PACKAGES += toybox-static
 # first_stage.sh stamps that region NEVER-RAN beforehand, so a stamp that is
 # still intact says second stage init never got to early-init - which is a
 # result in itself, and the one thing the first stage dump cannot tell us.
+#
+# It is gated separately from first_stage.sh because it is the expensive half:
+# it runs for the entire uptime, not just across first stage, rewriting the
+# rawdump ring once a second forever. That is worth it while chasing a boot that
+# dies before adb, and pure overhead on a device that boots. Turn it back on for
+# a debug build with:
+#
+#     make FP4_KMSGLOG=true ...
+ifeq ($(FP4_KMSGLOG),true)
 PRODUCT_PACKAGES += \
     fp4_kmsglog.sh \
     init.fp4log.rc
@@ -756,6 +804,7 @@ PRODUCT_PACKAGES += \
 # service - does not have init complain about starting something that is not
 # there.
 PRODUCT_VENDOR_PROPERTIES += ro.vendor.fp4.bootlog=1
+endif
 endif
 endif
 
@@ -1263,9 +1312,27 @@ PRODUCT_PACKAGES += \
     qti_telephony_hidl_wrapper.xml \
     qti_telephony_utils.xml
 
-# Updater for sideload in recovery
+# A/B updater.
+#
+# update_engine_sideload is the recovery-side flavour that *applies* a sideloaded
+# package. The system-side update_engine is what starts and finishes the Virtual
+# A/B snapshot merge on the first boot after an update, and update_verifier is
+# what marks the new slot successful.
+#
+# AOSP only declares these in generic_system.mk / mainline_system.mk, which this
+# product does not inherit (core_64_bit.mk + aosp_base_telephony.mk), so with
+# PRODUCT_VIRTUAL_AB_OTA := true from virtual_ab_ota.mk we had a device that
+# could receive an OTA but could never complete the merge. It stayed in
+# "snapshotted" state forever, which is not cosmetic: first-stage init has to map
+# the dm-snapshot devices before anything else runs, the bootloader refuses
+# `fastboot erase misc` with "Erase of misc is not allowed in snapshotted state",
+# and the device hung on the splash in both normal boot and recovery. Recovering
+# from that needed `fastboot snapshot-update cancel`.
 PRODUCT_PACKAGES += \
-    update_engine_sideload
+    update_engine \
+    update_engine_client \
+    update_engine_sideload \
+    update_verifier
 
 
 # Enable zygote critical window.

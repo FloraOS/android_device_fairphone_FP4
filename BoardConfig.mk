@@ -165,8 +165,11 @@ BOARD_BOOTIMAGE_PARTITION_SIZE := 0x06000000
 TARGET_SCREEN_DENSITY := 420
 
 
-# DTBO partition
-BOARD_DTBOIMG_PARTITION_SIZE := 0x0800000
+# DTBO partition. 0x1800000 is what the bootloader reports for dtbo_a/dtbo_b
+# (fastboot getvar partition-size:dtbo_a); this used to read 0x0800000, which
+# only ever under-padded the image rather than overflowing it, so the short
+# write was harmless - the DTBO header bounds what the bootloader reads back.
+BOARD_DTBOIMG_PARTITION_SIZE := 0x1800000
 
 
 # File system
@@ -312,33 +315,27 @@ BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
 # takes minutes and needs a battery pull to get out of.
 BOARD_KERNEL_CMDLINE += androidboot.init_fatal_reboot_target=recovery
 #
-# The raw-userdata boot logger, off by default.
+# The raw boot logger, on by default on eng (FP4_BOOT_LOGGER ?= true).
 #
 # This device has no post-mortem log of any kind - pstore/ramoops does not
 # survive a reset, the debug UART is not reachable without opening the phone,
 # and fbcon only takes the panel long after the interesting part of boot - so
-# the only channel that works is writing straight at the userdata partition and
-# reading it back from recovery with dd. That obviously destroys the filesystem
-# on /data, which makes it a bringup tool and nothing else: leave it on and the
-# boot gets all the way to "mount_all --late", fails to mount /data, and drops
-# into recovery with "Can't load Android system. Your data may be corrupt."
+# the only channel that works is writing straight at a raw partition and
+# reading it back from recovery with dd. It writes at rawdump, which is 8.2 GiB
+# of scratch only QCOM's crash handler ever touches, so it costs nothing and
+# leaves /data alone. See rootdir/first_stage.sh for the ring layout.
 #
-# Turn it on for a boot that dies before adb, with:
-#
-#     make FP4_BOOT_LOGGER=true ...
-#
-# then read the regions back from recovery - see rootdir/first_stage.sh for the
-# layout - and wipe /data afterwards.
 # FP4_BOOT_LOGGER itself is defined in device.mk - product config is evaluated
 # before board config, so it has to be set there to be visible to both.
-ifeq ($(FP4_BOOT_LOGGER),true)
-# Run /first_stage.sh from the ramdisk before DoFirstStageMount(), with stdio on
-# /dev/console, and block init until it exits. See rootdir/first_stage.sh: this
-# is the only way to see a first stage failure on this device, because fbcon
-# only takes the panel at ~4.1s and first stage init runs at ~3.9s, so anything
-# fatal there reboots before a single character is readable.
-BOARD_KERNEL_CMDLINE += androidboot.first_stage_console=1
-endif
+# No androidboot.first_stage_console here, and there must not be one. There is
+# no console for it to attach to: the debug UART needs the phone opened, and
+# fbcon only takes the panel at ~4.1s, well after first stage init runs at
+# ~3.9s. StartConsole() sets SA_NOCLDWAIT and then wait()s until pid 1 has no
+# children left, so with nothing on /dev/console init parks in the hook before
+# DoFirstStageMount() and never returns - a total hang, no adb, no USB, in
+# normal boot and in recovery alike, recoverable only by forcing the device
+# back to fastboot by hand. First stage logging goes to the rawdump ring
+# instead (/dev/fp4_log, see rootdir/first_stage.sh).
 endif
 
 #Enable dtb in boot image and boot image header version 2 support.
