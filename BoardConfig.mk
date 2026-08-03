@@ -108,7 +108,18 @@ endif
 # `fastboot flash avb_custom_key` before locking. Verify what actually got used
 # with `avbtool info_image --image vbmeta.img` - the "Public key (sha1)" of the
 # AOSP test key is 2597c218aae470a130f61162feaae70afd97f011.
+# These are consumed by kati, not soong, so unlike an apex_key or an
+# android_app_certificate they may be absolute paths outside the tree - which is
+# how the release keys stay out of the source tree entirely:
+#
+#     m dist FLORAOS_AVB_KEY=$KEYDIR/avb/floraos_vbmeta_rsa4096.pem \
+#            FLORAOS_AVB_SYSTEM_KEY=$KEYDIR/avb/floraos_vbmeta_system_rsa4096.pem
+#
+# The two levels are deliberately separate variables. Signing both with one key
+# throws away the reason the chain exists: a system-only OTA should be able to
+# re-sign vbmeta_system without touching the key the bootloader pins.
 FLORAOS_AVB_KEY ?= external/avb/test/data/testkey_rsa4096.pem
+FLORAOS_AVB_SYSTEM_KEY ?= $(FLORAOS_AVB_KEY)
 
 # Top level vbmeta: the one the bootloader verifies directly. It carries the
 # hash descriptors for boot, dtbo and recovery, the hashtree descriptors for odm
@@ -123,7 +134,7 @@ BOARD_AVB_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
 # vbmeta_system descriptor so a system-only OTA can re-sign them without
 # touching the top level vbmeta that the bootloader verifies.
 BOARD_AVB_VBMETA_SYSTEM := system system_ext product
-BOARD_AVB_VBMETA_SYSTEM_KEY_PATH := $(FLORAOS_AVB_KEY)
+BOARD_AVB_VBMETA_SYSTEM_KEY_PATH := $(FLORAOS_AVB_SYSTEM_KEY)
 BOARD_AVB_VBMETA_SYSTEM_ALGORITHM := SHA256_RSA4096
 BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
 BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX_LOCATION := 2
