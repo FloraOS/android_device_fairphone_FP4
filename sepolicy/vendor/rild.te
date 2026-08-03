@@ -1,0 +1,15 @@
+# qcrild calls back into QtiTelephonyService over binder.
+#
+# Seen as, during a call:
+#   avc: denied { call } for comm="DispatcherModul"
+#     scontext=u:r:rild:s0 tcontext=u:r:platform_app:s0 tclass=binder
+#
+# QtiTelephonyService (/system_ext/app/QtiTelephonyService, shared user
+# android.uid.qtiphone) is platform-signed, so it lands in platform_app, and it
+# is the only bridge from qcrild's IQcRilAudio to the audio HAL. Denied under
+# enforcing, calls connect but carry no audio - the same silent-call symptom as
+# when the service fails to start.
+#
+# The reverse direction is already allowed by the core policy; this is the
+# callback qcrild makes into it.
+binder_call(rild, platform_app)

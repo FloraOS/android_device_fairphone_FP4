@@ -1,0 +1,26 @@
+typeattribute openeuicc_app coredomain;
+
+app_domain(openeuicc_app)
+net_domain(openeuicc_app)
+
+# Its own /data/data.
+allow openeuicc_app app_data_file:dir create_dir_perms;
+allow openeuicc_app app_data_file:{ file lnk_file } create_file_perms;
+
+# The reason this domain exists: OpenEUICC drives the eUICC over OMAPI
+# (android.se.omapi.ISecureElementService). Without this it fails with
+# "avc: denied { find } ... secure_element_service" and, under enforcing, no
+# eSIM profile can be listed, downloaded or switched. AOSP only grants this to
+# nfc, which is the other OMAPI client.
+allow openeuicc_app secure_element_service:service_manager find;
+binder_call(openeuicc_app, secure_element)
+
+# Privileged telephony: getUiccCardsInfo() and the euicc APIs it calls need
+# this, and PrivilegedOpenEuiccApplication.onCreate() calls the first of them
+# before the app is even up. phone, isub, euicc_card_controller and
+# telephony_ims are all labelled radio_service in service_contexts, so this one
+# rule covers the lot.
+allow openeuicc_app radio_service:service_manager find;
+
+# Reading its own APEX's contents, and the usual app-visible system services.
+allow openeuicc_app apex_info_file:file r_file_perms;

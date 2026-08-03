@@ -1,0 +1,5 @@
+# OpenEUICC, the bundled LPA. Shipped in the net.f104a.apex.euicc APEX and
+# signed with the platform certificate, so without this it would land in
+# platform_app and would need secure_element_service opened up for every
+# platform-signed app on the device.
+type openeuicc_app, domain;

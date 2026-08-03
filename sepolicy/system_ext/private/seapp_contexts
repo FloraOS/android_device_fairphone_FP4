@@ -1,0 +1,5 @@
+# Give OpenEUICC its own domain rather than letting it fall into platform_app.
+# It is platform-signed and privileged (it needs READ_PRIVILEGED_PHONE_STATE and
+# WRITE_EMBEDDED_SUBSCRIPTIONS), and it is the only app on the device that talks
+# to the eUICC over OMAPI.
+user=_app seinfo=platform isPrivApp=true name=im.angry.openeuicc domain=openeuicc_app type=app_data_file levelFrom=all

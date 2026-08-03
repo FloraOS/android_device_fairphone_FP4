@@ -94,11 +94,36 @@ BUILD_BROKEN_USES_BUILD_HOST_STATIC_LIBRARY := true
 endif
 
 
+# AVB signing key.
+#
+# This is the key the bootloader pins when it is locked, so a release build must
+# NOT use the AOSP test key: external/avb/test/data/testkey_rsa4096.pem is public
+# and anyone can sign an image with it, which makes verified boot decorative.
+#
+# Point FLORAOS_AVB_KEY at the real 4096-bit RSA key to sign for real, e.g.
+#
+#     make FLORAOS_AVB_KEY=vendor/f104a-keys/avb/floraos_rsa4096.pem ...
+#
+# and put the matching public key in the bootloader with
+# `fastboot flash avb_custom_key` before locking. Verify what actually got used
+# with `avbtool info_image --image vbmeta.img` - the "Public key (sha1)" of the
+# AOSP test key is 2597c218aae470a130f61162feaae70afd97f011.
+FLORAOS_AVB_KEY ?= external/avb/test/data/testkey_rsa4096.pem
+
+# Top level vbmeta: the one the bootloader verifies directly. It carries the
+# hash descriptors for boot, dtbo and recovery, the hashtree descriptors for odm
+# and vendor, and the chain descriptor for vbmeta_system. Without these two
+# being set explicitly the build signs it with the AOSP test key by default,
+# silently.
+BOARD_AVB_KEY_PATH := $(FLORAOS_AVB_KEY)
+BOARD_AVB_ALGORITHM := SHA256_RSA4096
+BOARD_AVB_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
+
 # Chain partition for the system-side images. All three live in the same chained
 # vbmeta_system descriptor so a system-only OTA can re-sign them without
 # touching the top level vbmeta that the bootloader verifies.
 BOARD_AVB_VBMETA_SYSTEM := system system_ext product
-BOARD_AVB_VBMETA_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa4096.pem
+BOARD_AVB_VBMETA_SYSTEM_KEY_PATH := $(FLORAOS_AVB_KEY)
 BOARD_AVB_VBMETA_SYSTEM_ALGORITHM := SHA256_RSA4096
 BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
 BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX_LOCATION := 2
@@ -336,6 +361,23 @@ BOARD_KERNEL_CMDLINE += androidboot.init_fatal_reboot_target=recovery
 # normal boot and in recovery alike, recoverable only by forcing the device
 # back to fastboot by hand. First stage logging goes to the rawdump ring
 # instead (/dev/fp4_log, see rootdir/first_stage.sh).
+
+else
+
+# Turn the kernel console off on everything that is not eng.
+#
+# ActivityManagerService.isUartEnabled() greps /proc/cmdline for the literal
+# "console=null" and, not finding it, posts an ongoing "Serial console enabled -
+# Performance is impacted" notification that cannot be dismissed. Our cmdline
+# carries androidboot.console=ttyMSM0 unconditionally, which is not the same
+# token, so without this a user build ships with that notification permanently
+# in the shade.
+#
+# It is also the right thing on its own merits: on a locked, verified-boot
+# device there is no reason to keep a kernel console on the debug UART, and
+# printk to it is synchronous, so every message stalls the CPU that emitted it.
+BOARD_KERNEL_CMDLINE += console=null
+
 endif
 
 #Enable dtb in boot image and boot image header version 2 support.
@@ -474,8 +516,10 @@ USE_SENSOR_MULTI_HAL := true
 # Ensure clearing out policy dirs upon BoardConfig setup. This is a workaround for QCOM build system
 # pulling in BoardConfig.mk twice. These lines are no-op on open source builds.
 BOARD_SEPOLICY_DIRS :=
-SYSTEM_EXT_PUBLIC_SEPOLICY_DIRS :=
-SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS :=
+# OpenEUICC's own domain lives here rather than in system/sepolicy, so an AOSP
+# resync never conflicts with it. See sepolicy/system_ext/private/openeuicc_app.te.
+SYSTEM_EXT_PUBLIC_SEPOLICY_DIRS := $(FP_PATH)/sepolicy/system_ext/public
+SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS := $(FP_PATH)/sepolicy/system_ext/private
 PRODUCT_PUBLIC_SEPOLICY_DIRS :=
 PRODUCT_PRIVATE_SEPOLICY_DIRS :=
 
